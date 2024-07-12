@@ -1,93 +1,137 @@
 #include "piece.h"
 using namespace std;
 
-Piece::Piece(int r, int c): row{r}, col{c} {}
+Piece::Piece(int r, int c, Game& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite} {}
 
-Pawn::Pawn(int r, int c): Piece{r, c}, unmoved{true} {}
-vector<pair<int, int>> Pawn::possibleMoves() const {
+Pawn::Pawn(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
+vector<pair<int, int>> Pawn::validMoves() const {
   vector<pair<int, int>> moves;
-  // TODO: how to differentiate between white/black piece moving up/down?
-  // this implementation is for a white piece only
-  if (row-1 >= 0) moves.emplace_back(row-1, col);
-  if (unmoved) moves.emplace_back(row-2, col);
+
+  if (isWhite) {
+    if (row-1 >= 0 && b.board[row-1][col] == nullptr) moves.emplace_back(row-1, col);
+    if (unmoved && row-2 >= 0 && b.board[row-2][col] == nullptr) moves.emplace_back(row-2, col);
+    // TODO: en passant
+  }
+  else {
+    if (row+1 <= 7 && b.board[row+1][col] == nullptr) moves.emplace_back(row+1, col);
+    if (unmoved && row+2 <= 7 && b.board[row+2][col] == nullptr) moves.emplace_back(row+2, col);
+    // TODO: en passant
+  }
+
   return moves;
 }
-char Pawn::getSymbol() const { return 'P'; }
+char Pawn::getSymbol() const { return isWhite ? 'P' : 'p'; }
 
-King::King(int r, int c): Piece{r, c}, canCastle{true} {}
-vector<pair<int, int>> King::possibleMoves() const {
+King::King(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite}, canCastle{true} {}
+vector<pair<int, int>> King::validMoves() const {
   vector<pair<int, int>> moves;
   for (int r = -1; r <= 1; ++r) {
     int newRow = row+r;
     for (int c = -1; c <= 1; ++c) {
       int newCol = col+c;
-      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && !(r == 0 && c == 0)) {
+      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.board[newRow][newCol] == nullptr) {
         moves.emplace_back(newRow, newCol);
       }
     }
   }
   if (canCastle) {
-    // TODO: push back some move - need to which rook(s) can be castled with too 
+    // TODO: push back some move - need to which rook(s) can be castled with too
+    if (b.board[row][0]->getSymbol() == isWhite ? 'R' : 'r') {
+      bool flag = true;
+      for (int i = 1; i < col ; ++i) {
+        if (b.board[row][i] != nullptr) {
+          flag = false;
+          break;
+        }
+      }
+      // all spaces between are empty: castling is a valid move
+      if (flag && col-2 >= 0) moves.emplace_back(row, col-2);
+    }
+    if (b.board[row][7]->getSymbol() == isWhite ? 'R' : 'r') {
+      bool flag = true;
+      for (int i = 6; i > col ; --i) {
+        if (b.board[row][i] != nullptr) {
+          flag = false;
+          break;
+        }
+      }
+      // all spaces between are empty: castling is a valid move
+      if (flag && col+2 <= 7) moves.emplace_back(row, col+2);
+    }
   }
 
   return moves;
 }
-char King::getSymbol() const { return 'K'; }
+char King::getSymbol() const { return isWhite ? 'K' : 'k'; }
 
 
 
-Bishop::Bishop(int r, int c): Piece{r, c} {}
-vector<pair<int, int>> Bishop::possibleMoves() const {
+Bishop::Bishop(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite} {}
+vector<pair<int, int>> Bishop::validMoves() const {
   vector<pair<int, int>> moves;
 
-  // while loops that go diagonally in each direction on the board until its out of bounds
+  // while loops that go diagonally in each direction on the Game until its out of bounds
   int r = row, c = col;
   while (++r <= 7 && ++c <= 7) {
+    if (b.board[r][c] != nullptr) break;
     moves.emplace_back(r, c);
   }
   r = row; c = col;
   while (--r >= 0 && --c >= 0) {
+    if (b.board[r][c] != nullptr) break;
     moves.emplace_back(r, c);
   }
   r = row; c = col;
   while (++r <= 7 && --c >= 0) {
+    if (b.board[r][c] != nullptr) break;
     moves.emplace_back(r, c);
   }
   r = row; c = col;
   while (--r >= 7 && ++c <= 7) {
+    if (b.board[r][c] != nullptr) break;
     moves.emplace_back(r, c);
   }
 
   return moves;
 }
-char Bishop::getSymbol() const { return 'B'; }
+char Bishop::getSymbol() const { return isWhite ? 'B' : 'b'; }
 
-Rook::Rook(int r, int c): Piece{r, c} {}
-vector<pair<int, int>> Rook::possibleMoves() const {
+Rook::Rook(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
+vector<pair<int, int>> Rook::validMoves() const {
   vector<pair<int, int>> moves;
 
-  for (int pos = 0; pos <= 7; ++pos) {
-    if (pos != col) {
-      moves.emplace_back(row, pos);
-    }
-    if (pos != row) {
-      moves.emplace_back(pos, col);
-    }
+  // add all valid horizontal moves
+  for (int c = col+1; c <= 7; ++c) {
+    if (b.board[row][c] != nullptr) break;
+    moves.emplace_back(row, c);
+  }
+  for (int c = col-1; c >= 0; --c) {
+    if (b.board[row][c] != nullptr) break;
+    moves.emplace_back(row, c);
+  }
+  // add all valid vertical moves
+  for (int r = row+1; r <= 7; ++r) {
+    if (b.board[r][col] != nullptr) break;
+    moves.emplace_back(r, col);
+  }
+  for (int r = row-1; r >= 0; --r) {
+    if (b.board[r][col] != nullptr) break;
+    moves.emplace_back(r, col);
   }
 
   return moves;
 }
-char Rook::getSymbol() const { return 'R'; }
+char Rook::getSymbol() const { return isWhite ? 'R' : 'r'; }
 
-Queen::Queen(int r, int c): Piece{r, c} {}
-vector<pair<int, int>> Queen::possibleMoves() const {
+Queen::Queen(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite} {}
+vector<pair<int, int>> Queen::validMoves() const {
   // a Queen can move like a Rook or Bishop
   // so, we'll instantiate a Rook and Bishop at the same coords as the Queen and find their possible moves
-  Rook r{row, col};
-  Bishop b{row, col};
+  Rook r{row, col, b, isWhite};
+  Bishop bish{row, col, b, isWhite};
 
-  vector<pair<int, int>> rookMoves = r.possibleMoves();
-  vector<pair<int, int>> bishopMoves = b.possibleMoves();
+  vector<pair<int, int>> rookMoves = r.validMoves();
+  vector<pair<int, int>> bishopMoves = bish.validMoves();
   
   // merge all possible moves into one vector
   vector<pair<int, int>> mergedMoves(rookMoves.size() + bishopMoves.size());
@@ -96,21 +140,21 @@ vector<pair<int, int>> Queen::possibleMoves() const {
   
   return mergedMoves;
 }
-char Queen::getSymbol() const { return 'Q'; }
+char Queen::getSymbol() const { return isWhite ? 'Q' : 'q'; }
 
-Knight::Knight(int r, int c): Piece{r, c} {}
-vector<pair<int, int>> Knight::possibleMoves() const {
+Knight::Knight(int r, int c, Game& b, bool isWhite): Piece{r, c, b, isWhite} {}
+vector<pair<int, int>> Knight::validMoves() const {
   vector<pair<int, int>> moves;
 
-  if (row+1 <= 7 && col+2 <= 7) moves.emplace_back(row+1, col+2);
-  if (row+2 <= 7 && col+1 <= 7) moves.emplace_back(row+2, col+1);
-  if (row+1 <= 7 && col-2 >= 0) moves.emplace_back(row+1, col-2);
-  if (row+2 <= 7 && col-1 >= 0) moves.emplace_back(row+2, col-1);
-  if (row-1 >= 0 && col+2 <= 7) moves.emplace_back(row-1, col+2);
-  if (row-2 >= 0 && col+1 <= 7) moves.emplace_back(row-2, col+1);
-  if (row-1 >= 0 && col-2 >= 0) moves.emplace_back(row-1, col-2);
-  if (row-2 >= 0 && col-1 >= 0) moves.emplace_back(row-2, col-1);
+  if (row+1 <= 7 && col+2 <= 7 && b.board[row+1][col+2] == nullptr) moves.emplace_back(row+1, col+2);
+  if (row+2 <= 7 && col+1 <= 7 && b.board[row+2][col+1] == nullptr) moves.emplace_back(row+2, col+1);
+  if (row+1 <= 7 && col-2 >= 0 && b.board[row+1][col-2] == nullptr) moves.emplace_back(row+1, col-2);
+  if (row+2 <= 7 && col-1 >= 0 && b.board[row+2][col-1] == nullptr) moves.emplace_back(row+2, col-1);
+  if (row-1 >= 0 && col+2 <= 7 && b.board[row-1][col+2] == nullptr) moves.emplace_back(row-1, col+2);
+  if (row-2 >= 0 && col+1 <= 7 && b.board[row-2][col+1] == nullptr) moves.emplace_back(row-2, col+1);
+  if (row-1 >= 0 && col-2 >= 0 && b.board[row-1][col-2] == nullptr) moves.emplace_back(row-1, col-2);
+  if (row-2 >= 0 && col-1 >= 0 && b.board[row-2][col-1] == nullptr) moves.emplace_back(row-2, col-1);
 
   return moves;
 }
-char Knight::getSymbol() const { return 'N'; }
+char Knight::getSymbol() const { return isWhite ? 'N' : 'n'; }

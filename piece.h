@@ -1,14 +1,18 @@
+#ifndef PIECE_H
+#define PIECE_H
+
 #include <vector>
 #include <utility>
-class Board;
+#include "game.h"
 
 class Piece {
   protected:
     int row, col;
-    //Board& b;
+    Game& b;
+    bool isWhite;
   public:
-    Piece(int, int/*, Board&*/);
-    virtual std::vector<std::pair<int, int>> possibleMoves() const = 0;
+    Piece(int, int, Game&, bool);
+    virtual std::vector<std::pair<int, int>> validMoves() const = 0;
     virtual char getSymbol() const = 0;
     virtual ~Piece() {}
 };
@@ -17,38 +21,41 @@ class Pawn: public Piece {
     bool unmoved;
     void promote();
   public:
-    Pawn(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    Pawn(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class King: public Piece {
     bool canCastle;
   public:
-    King(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    King(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Bishop: public Piece {
   public:
-    Bishop(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    Bishop(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Rook: public Piece {
+    bool unmoved;
   public:
-    Rook(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    Rook(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Queen: public Piece {
   public:
-    Queen(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    Queen(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Knight: public Piece {
   public:
-    Knight(int, int);
-    std::vector<std::pair<int, int>> possibleMoves() const override;
+    Knight(int, int, Game&, bool);
+    std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
+
+#endif
