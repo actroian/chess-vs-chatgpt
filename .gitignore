@@ -1,0 +1,6 @@
+# files generated during compilation
+chess
+*.o
+
+# misc files/folders
+.vscode
