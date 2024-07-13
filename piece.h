@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include "game.h"
+class Game;
 
 class Piece {
   protected:

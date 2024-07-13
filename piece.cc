@@ -1,5 +1,9 @@
 #include "piece.h"
+#include "game.h"
 using namespace std;
+
+// TODO: fix valid moves so it adds a valid move on the first instance
+// of the square it can go to has an opposite colored piece
 
 Piece::Piece(int r, int c, Game& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite} {}
 
@@ -36,7 +40,7 @@ vector<pair<int, int>> King::validMoves() const {
   }
   if (canCastle) {
     // TODO: push back some move - need to which rook(s) can be castled with too
-    if (b.board[row][0]->getSymbol() == isWhite ? 'R' : 'r') {
+    if (b.board[row][0]->getSymbol() == (isWhite ? 'R' : 'r')) {
       bool flag = true;
       for (int i = 1; i < col ; ++i) {
         if (b.board[row][i] != nullptr) {
@@ -47,7 +51,7 @@ vector<pair<int, int>> King::validMoves() const {
       // all spaces between are empty: castling is a valid move
       if (flag && col-2 >= 0) moves.emplace_back(row, col-2);
     }
-    if (b.board[row][7]->getSymbol() == isWhite ? 'R' : 'r') {
+    if (b.board[row][7]->getSymbol() == (isWhite ? 'R' : 'r')) {
       bool flag = true;
       for (int i = 6; i > col ; --i) {
         if (b.board[row][i] != nullptr) {

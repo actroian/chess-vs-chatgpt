@@ -5,19 +5,21 @@
 #include <vector>
 #include <memory>
 #include "player.h"
-class Piece;
+#include "piece.h"
 
 class Game {
     std::ostream& out;
-    int wScore, bScore;
-    Player& p1, &p2;
-
+    double wScore, bScore;
+    
   public:
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
-    Game(std::ostream&, Player&, Player&);
+    std::unique_ptr<Player> p1, p2;
+    Game();
+    Game(std::ostream&, std::unique_ptr<Player>, std::unique_ptr<Player>);
     void print() const;
     void reset();
     void setup();
+    void endGame(int);
 };
 
 #endif

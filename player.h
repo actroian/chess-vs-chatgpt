@@ -5,26 +5,19 @@ class Player {
   protected:
     bool white;
   public:
+    Player(bool);
     bool isWhite();
+    virtual ~Player() = 0;
 };
 
 class Human: public Player {
-
+  public:
+    Human(bool);
 };
 
 class Computer: public Player {
-
-};
-
-class L1: public Computer {
-
-};
-class L2: public Computer {
-
-};
-
-class L3: public Computer {
-
+  public:
+    Computer(bool);
 };
 
 #endif
