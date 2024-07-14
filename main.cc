@@ -52,12 +52,18 @@ int main() {
       game = make_unique<Game>(cout, std::move(p1), std::move(p2));
       
       // for debugging
-      cout << game->p1->isWhite() << endl;
-      cout << game->p2->isWhite() << endl;
       game->print();
     }
     else if (cmd == "resign") {
-      
+      if (!game->isP1Turn()) {
+        cout << endl << "Black resigns. ";
+        game->endGame(0);
+      }
+      if (game->isP1Turn()) {
+        cout << endl << "White resigns. ";
+        game->endGame(1);
+      }
+      game->reset();
     }
     else if (cmd == "move") {
       cin >> arg1 >> arg2;
@@ -82,5 +88,6 @@ int main() {
       } while (cmd != "done");
       // TODO: add setup verifications as outlined in chess.pdf
     }
+    else if (cmd == "q") break;
   }
 }

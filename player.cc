@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(bool isWhite): white{isWhite} {}
+Player::Player(bool isWhite): white{isWhite}, inCheck{false} {}
 Player::~Player() {}
 bool Player::isWhite() { return white; }
 

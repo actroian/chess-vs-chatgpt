@@ -9,7 +9,7 @@ Game::Game(): out{cout} {
     board.push_back(std::move(row));
   }
 }
-Game::Game(ostream& out, unique_ptr<Player> p1, unique_ptr<Player> p2) : out{out}, wScore{0}, bScore{0}, p1{std::move(p1)}, p2{std::move(p2)} {
+Game::Game(ostream& out, unique_ptr<Player> p1, unique_ptr<Player> p2) : out{out}, wScore{0}, bScore{0}, p1Turn{true}, p1{std::move(p1)}, p2{std::move(p2)} {
   // initialize empty board
   for (int i = 0; i <= 7; ++i) {
     vector<unique_ptr<Piece>> row(8);
@@ -17,6 +17,7 @@ Game::Game(ostream& out, unique_ptr<Player> p1, unique_ptr<Player> p2) : out{out
   }
   reset();
 }
+bool Game::isP1Turn() const { return p1Turn; }
 void Game::reset() {
   board[0][0] = make_unique<Rook>(0, 0, *this, false);
   board[7][0] = make_unique<Rook>(7, 0, *this, true);
@@ -68,6 +69,8 @@ void Game::print() const {
     out << endl;
   }
   out << endl << "  abcdefgh" << endl;
+
+  if (p1Turn) out << endl << "White to move." << endl;
 }
 void Game::endGame(int state) {
   switch (state) {
@@ -75,16 +78,18 @@ void Game::endGame(int state) {
     case 0:
       ++wScore;
       out << "White wins!" << endl;
+      break;
     case 1:
       ++bScore;
       out << "Black wins!" << endl;
+      break;
     case 2:
       wScore += 0.5;
       bScore += 0.5;
       out << "Stalemate!" << endl;
-    default:
-      out << endl << "Final Score:" << endl;
-      out << "White: " << wScore << endl;
-      out << "Black: " << bScore << endl;
+      break;
   }
+  out << endl << "Final Score:" << endl;
+  out << "White: " << wScore << endl;
+  out << "Black: " << bScore << endl;
 }

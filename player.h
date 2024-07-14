@@ -4,6 +4,7 @@
 class Player {
   protected:
     bool white;
+    bool inCheck;
   public:
     Player(bool);
     bool isWhite();
@@ -13,6 +14,7 @@ class Player {
 class Human: public Player {
   public:
     Human(bool);
+    void resign();
 };
 
 class Computer: public Player {
