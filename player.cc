@@ -1,4 +1,5 @@
 #include "player.h"
+using namespace std;
 
 Player::Player(bool isWhite): white{isWhite}, inCheck{false} {}
 Player::~Player() {}

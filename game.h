@@ -2,8 +2,10 @@
 #define GAME_H
 
 #include <iostream>
-#include <vector>
+#include <cctype>
+#include <algorithm>
 #include <memory>
+#include <map>
 #include "player.h"
 #include "piece.h"
 

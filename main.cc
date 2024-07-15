@@ -1,5 +1,6 @@
 #include <iostream>
 #include "game.h"
+#include "globals.h"
 using namespace std;
 
 const string HUMAN = "human";
@@ -28,11 +29,7 @@ unique_ptr<Player> createPlayer(string& input, bool isWhite) {
   //else if (input == L4) {
   //  return make_unique<Computer>(isWhite);
   //}
-  else {
-    cout << "Incorrect player type. Try Again." << endl;
-    cin >> input;
-    return createPlayer(input, isWhite);
-  }
+  else throw runtime_error("missing strings in validInputs vector");
 }
 
 int main() {
@@ -41,17 +38,14 @@ int main() {
 
   while (cin >> cmd) {
     if (cmd == "game" ) {
-      cout << "Choose player 1" << endl;
-      cin >> arg1;
+      arg1 = getInput("player", validPlayers);
       unique_ptr<Player> p1 = createPlayer(arg1, true);
 
-      cout << "Choose player 2" << endl;
-      cin >> arg2;
+      arg2 = getInput("player", validPlayers);
       unique_ptr<Player> p2 = createPlayer(arg2, false);
 
       game = make_unique<Game>(cout, std::move(p1), std::move(p2));
       
-      // for debugging
       game->print();
     }
     else if (cmd == "resign") {
@@ -70,23 +64,7 @@ int main() {
 
     }
     else if (cmd == "setup") {
-      do {
-        cin >> cmd;
-
-        if (cmd == "+" ) {
-          cin >> arg1 >> arg2;
-
-        }
-        else if (cmd == "-") {
-          cin >> arg1;
-
-        }
-        else if (cmd == "=") {
-          cin >> arg1;
-
-        }
-      } while (cmd != "done");
-      // TODO: add setup verifications as outlined in chess.pdf
+      game->setup();
     }
     else if (cmd == "q") break;
   }

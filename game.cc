@@ -1,5 +1,6 @@
 #include "game.h"
 #include "piece.h"
+#include "globals.h"
 using namespace std;
 
 Game::Game(): out{cout} {
@@ -44,9 +45,65 @@ void Game::reset() {
   }
 }
 void Game::setup() {
-  board.clear();
+  string cmd, arg1, arg2;
 
-  // TODO: implement setup command interface
+  while (cin >> cmd) {
+    if (cmd == "+" ) {
+      arg1 = getInput("type of piece", validPieces);
+      arg2 = getInput("position on the board", boardLocations);
+
+      pair<int, int> location = posToInd[arg2];
+
+      if (board[location.first][location.second] == nullptr) out << "Placed piece at " << arg2 << endl;
+      else out << "Replaced existing piece at " << arg2 << endl;
+      
+      unique_ptr<Piece> p = nullptr;
+      if (arg1 == "p") {
+        p = make_unique<Pawn>(location.first, location.second, *this, p1Turn);
+      }
+      if (arg1 == "k") {
+        p = make_unique<King>(location.first, location.second, *this, p1Turn);
+      }
+      if (arg1 == "q") {
+        p = make_unique<Queen>(location.first, location.second, *this, p1Turn);
+      }
+      if (arg1 == "b") {
+        p = make_unique<Bishop>(location.first, location.second, *this, p1Turn);
+      }
+      if (arg1 == "r") {
+        p = make_unique<Rook>(location.first, location.second, *this, p1Turn);
+      }
+      if (arg1 == "n") {
+        p = make_unique<Knight>(location.first, location.second, *this, p1Turn);
+      }
+      board[location.first][location.second] = std::move(p);
+
+      print();
+    }
+    else if (cmd == "-") {
+      arg1 = getInput("position on the board", boardLocations);
+
+      pair<int, int> location = posToInd[arg1];
+      board[location.first][location.second] = nullptr;
+
+      out << "Removed piece at: " << arg1 << endl;
+      print();
+    }
+    else if (cmd == "=") {
+      arg1 = getInput("colour", validColours);
+      
+      if (arg1 == validColours[0]) {
+        p1Turn = true;
+        out << "Next turn set to White." << endl;
+      }
+      if (arg1 == validColours[1]) {
+        p1Turn = false;
+        out << "Next turn set to Black." << endl;
+      }
+    }
+    else if (cmd == "done") break;
+  }
+  // TODO: implement setup mode validation
 }
 void Game::print() const {
   for (int r = 0; r <= 7; ++r) {
@@ -68,9 +125,10 @@ void Game::print() const {
     }
     out << endl;
   }
-  out << endl << "  abcdefgh" << endl;
+  out << endl << "  abcdefgh" << endl << endl;
 
-  if (p1Turn) out << endl << "White to move." << endl;
+  if (p1Turn) out << "White to move." << endl;
+  else out << "Black to move." << endl;
 }
 void Game::endGame(int state) {
   switch (state) {
