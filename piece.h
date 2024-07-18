@@ -3,15 +3,16 @@
 
 #include <vector>
 #include <utility>
-class Game;
+
+class Board;
 
 class Piece {
   protected:
     int row, col;
-    Game& b;
+    Board& b;
     bool isWhite;
   public:
-    Piece(int, int, Game&, bool);
+    Piece(int, int, Board&, bool);
     virtual std::vector<std::pair<int, int>> validMoves() const = 0;
     virtual char getSymbol() const = 0;
     virtual ~Piece() {}
@@ -21,39 +22,39 @@ class Pawn: public Piece {
     bool unmoved;
     void promote();
   public:
-    Pawn(int, int, Game&, bool);
+    Pawn(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class King: public Piece {
     bool canCastle;
   public:
-    King(int, int, Game&, bool);
+    King(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Bishop: public Piece {
   public:
-    Bishop(int, int, Game&, bool);
+    Bishop(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Rook: public Piece {
     bool unmoved;
   public:
-    Rook(int, int, Game&, bool);
+    Rook(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Queen: public Piece {
   public:
-    Queen(int, int, Game&, bool);
+    Queen(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
 class Knight: public Piece {
   public:
-    Knight(int, int, Game&, bool);
+    Knight(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
 };
