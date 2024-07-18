@@ -70,7 +70,7 @@ void Board::removePiece(int row, int col) {
 const unique_ptr<Piece>& Board::at(int row, int col) const {
     return board[row][col];
 }
-std::unique_ptr<Piece>& Board::at(int row, int col) {
+std::unique_ptr<Piece>& Board::set(int row, int col) {
     return board[row][col];
 }
 
@@ -78,3 +78,11 @@ std::unique_ptr<Piece>& Board::at(int row, int col) {
 bool Board::isP1Turn() const { return p1Turn; }
 
 void Board::setP1Turn(bool isP1Turn) { p1Turn = isP1Turn; }
+
+void Board::clearBoard() {
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            board[r][c] = nullptr;
+        }
+    }
+}
