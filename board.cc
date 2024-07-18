@@ -12,7 +12,7 @@ Board::Board() : p1Turn{true} {
 }
 
 void Board::resetBoard() {
-    (*this).clearBoard();
+    clearBoard();
     board[0][0] = make_unique<Rook>(0, 0, *this, false);
     board[7][0] = make_unique<Rook>(7, 0, *this, true);
     board[0][1] = make_unique<Knight>(0, 1, *this, false);
