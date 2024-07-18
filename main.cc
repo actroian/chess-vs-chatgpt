@@ -35,6 +35,7 @@ unique_ptr<Player> createPlayer(string& input, bool isWhite) {
 int main() {
   string cmd, arg1, arg2;
   unique_ptr<Game> game;
+  Board board;
 
   while (cin >> cmd) {
     if (cmd == "game" ) {
@@ -44,16 +45,16 @@ int main() {
       arg2 = getInput("player", validPlayers);
       unique_ptr<Player> p2 = createPlayer(arg2, false);
 
-      game = make_unique<Game>(cout, std::move(p1), std::move(p2));
+      game = make_unique<Game>(cout, std::move(p1), std::move(p2), board);
       
       game->print();
     }
     else if (cmd == "resign") {
-      if (!game->isP1Turn()) {
+      if (!game->board.isP1Turn()) {
         cout << endl << "Black resigns. ";
         game->endGame(0);
       }
-      if (game->isP1Turn()) {
+      if (game->board.isP1Turn()) {
         cout << endl << "White resigns. ";
         game->endGame(1);
       }
