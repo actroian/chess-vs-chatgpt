@@ -8,12 +8,13 @@ class Board;
 
 class Piece {
   protected:
-    int row, col;
+    int row;
+    int col;
     Board& b;
     bool isWhite;
   public:
-    Piece(int, int, Board&, bool);
-    virtual std::vector<std::pair<int, int>> validMoves() const = 0;
+    Piece(int r, int c, Board& board, bool isWhite);
+    virtual std::vector<std::pair<int, int> > validMoves() const = 0;
     virtual char getSymbol() const = 0;
     virtual ~Piece() {}
 };

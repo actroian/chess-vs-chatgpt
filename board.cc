@@ -12,6 +12,7 @@ Board::Board() : p1Turn{true} {
 }
 
 void Board::resetBoard() {
+    clearBoard();
     board[0][0] = make_unique<Rook>(0, 0, *this, false);
     board[7][0] = make_unique<Rook>(7, 0, *this, true);
     board[0][1] = make_unique<Knight>(0, 1, *this, false);
@@ -70,10 +71,6 @@ void Board::removePiece(int row, int col) {
 const unique_ptr<Piece>& Board::at(int row, int col) const {
     return board[row][col];
 }
-std::unique_ptr<Piece>& Board::set(int row, int col) {
-    return board[row][col];
-}
-
 
 bool Board::isP1Turn() const { return p1Turn; }
 

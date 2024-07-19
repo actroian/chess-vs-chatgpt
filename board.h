@@ -18,7 +18,6 @@ class Board{
     void placePiece(int row, int col, std::unique_ptr<Piece>&& piece);
     void removePiece(int row, int col);
     const std::unique_ptr<Piece>& at(int row, int col) const;
-    std::unique_ptr<Piece>& set(int row, int col);
     bool isP1Turn() const;
     void setP1Turn(bool isP1Turn);
     void clearBoard();
