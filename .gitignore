@@ -6,3 +6,4 @@ chess
 .vscode
 group.txt
 testoutputs/
+obj/
