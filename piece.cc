@@ -34,14 +34,16 @@ vector<pair<int, int>> King::validMoves() const {
     int newRow = row+r;
     for (int c = -1; c <= 1; ++c) {
       int newCol = col+c;
-      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.at(newRow,newCol) == nullptr) {
+      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7) {
         moves.emplace_back(newRow, newCol);
       }
     }
   }
   if (canCastle) {
-    // TODO: push back some move - need to which rook(s) can be castled with too
-    if (b.at(row, 0)->getSymbol() == (isWhite ? 'R' : 'r')) {
+    // TODO: switch canCastle to false if king is moved
+    auto piece_ptr = b.at(row, 0).get(); // Get the raw pointer from the unique_ptr
+    Rook* rook_ptr = dynamic_cast<Rook*>(piece_ptr); // Perform the dynamic cast
+    if (rook_ptr) {
       bool flag = true;
       for (int i = 1; i < col ; ++i) {
         if (b.at(row, i) != nullptr) {
@@ -50,9 +52,11 @@ vector<pair<int, int>> King::validMoves() const {
         }
       }
       // all spaces between are empty: castling is a valid move
-      if (flag && col-2 >= 0) moves.emplace_back(row, col-2);
+      if (flag && col-2 >= 0 && rook_ptr->isUnmoved()) moves.emplace_back(row, col-2);
     }
-    if (b.at(row,7)->getSymbol() == (isWhite ? 'R' : 'r')) {
+    piece_ptr = b.at(row, 7).get(); // Get the raw pointer from the unique_ptr
+    rook_ptr = dynamic_cast<Rook*>(piece_ptr); // Perform the dynamic cast
+    if (rook_ptr) {
       bool flag = true;
       for (int i = 6; i > col ; --i) {
         if (b.at(row, i) != nullptr) {
@@ -61,7 +65,7 @@ vector<pair<int, int>> King::validMoves() const {
         }
       }
       // all spaces between are empty: castling is a valid move
-      if (flag && col+2 <= 7) moves.emplace_back(row, col+2);
+      if (flag && col+2 <= 7 && rook_ptr->isUnmoved()) moves.emplace_back(row, col+2);
     }
   }
 
@@ -78,23 +82,23 @@ vector<pair<int, int>> Bishop::validMoves() const {
   // while loops that go diagonally in each direction on the Game until its out of bounds
   int r = row, c = col;
   while (++r <= 7 && ++c <= 7) {
-    if (b.at(r,c) != nullptr) break;
     moves.emplace_back(r, c);
+    if (b.at(r,c) != nullptr) break;
   }
   r = row; c = col;
   while (--r >= 0 && --c >= 0) {
-    if (b.at(r,c) != nullptr) break;
     moves.emplace_back(r, c);
+    if (b.at(r,c) != nullptr) break;
   }
   r = row; c = col;
   while (++r <= 7 && --c >= 0) {
-    if (b.at(r,c) != nullptr) break;
     moves.emplace_back(r, c);
+    if (b.at(r,c) != nullptr) break;
   }
   r = row; c = col;
   while (--r >= 7 && ++c <= 7) {
-    if (b.at(r,c) != nullptr) break;
     moves.emplace_back(r, c);
+    if (b.at(r,c) != nullptr) break;
   }
 
   return moves;
@@ -107,26 +111,27 @@ vector<pair<int, int>> Rook::validMoves() const {
 
   // add all valid horizontal moves
   for (int c = col+1; c <= 7; ++c) {
-    if (b.at(row,c) != nullptr) break;
     moves.emplace_back(row, c);
+    if (b.at(row,c) != nullptr) break;
   }
   for (int c = col-1; c >= 0; --c) {
-    if (b.at(row,c) != nullptr) break;
     moves.emplace_back(row, c);
+    if (b.at(row,c) != nullptr) break;
   }
   // add all valid vertical moves
   for (int r = row+1; r <= 7; ++r) {
-    if (b.at(row,col) != nullptr) break;
     moves.emplace_back(r, col);
+    if (b.at(row,col) != nullptr) break;
   }
   for (int r = row-1; r >= 0; --r) {
-    if (b.at(r,col) != nullptr) break;
     moves.emplace_back(r, col);
+    if (b.at(r,col) != nullptr) break;
   }
 
   return moves;
 }
 char Rook::getSymbol() const { return isWhite ? 'R' : 'r'; }
+bool Rook::isUnmoved() const { return unmoved; }
 
 Queen::Queen(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Queen::validMoves() const {
@@ -151,14 +156,14 @@ Knight::Knight(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Knight::validMoves() const {
   vector<pair<int, int>> moves;
 
-  if (row+1 <= 7 && col+2 <= 7 && b.at(row+1,col+2) == nullptr) moves.emplace_back(row+1, col+2);
-  if (row+2 <= 7 && col+1 <= 7 && b.at(row+2, col+1) == nullptr) moves.emplace_back(row+2, col+1);
-  if (row+1 <= 7 && col-2 >= 0 && b.at(row+1, col-2) == nullptr) moves.emplace_back(row+1, col-2);
-  if (row+2 <= 7 && col-1 >= 0 && b.at(row+2, col-1) == nullptr) moves.emplace_back(row+2, col-1);
-  if (row-1 >= 0 && col+2 <= 7 && b.at(row-1, col+2) == nullptr) moves.emplace_back(row-1, col+2);
-  if (row-2 >= 0 && col+1 <= 7 && b.at(row-2, col+1) == nullptr) moves.emplace_back(row-2, col+1);
-  if (row-1 >= 0 && col-2 >= 0 && b.at(row-1, col-2) == nullptr) moves.emplace_back(row-1, col-2);
-  if (row-2 >= 0 && col-1 >= 0 && b.at(row-2, col-1) == nullptr) moves.emplace_back(row-2, col-1);
+  if (row+1 <= 7 && col+2 <= 7) moves.emplace_back(row+1, col+2);
+  if (row+2 <= 7 && col+1 <= 7) moves.emplace_back(row+2, col+1);
+  if (row+1 <= 7 && col-2 >= 0) moves.emplace_back(row+1, col-2);
+  if (row+2 <= 7 && col-1 >= 0) moves.emplace_back(row+2, col-1);
+  if (row-1 >= 0 && col+2 <= 7) moves.emplace_back(row-1, col+2);
+  if (row-2 >= 0 && col+1 <= 7) moves.emplace_back(row-2, col+1);
+  if (row-1 >= 0 && col-2 >= 0) moves.emplace_back(row-1, col-2);
+  if (row-2 >= 0 && col-1 >= 0) moves.emplace_back(row-2, col-1);
 
   return moves;
 }

@@ -47,6 +47,7 @@ class Rook: public Piece {
     Rook(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
+    bool isUnmoved() const;
 };
 class Queen: public Piece {
   public:
