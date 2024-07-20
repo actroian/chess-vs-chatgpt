@@ -15,15 +15,18 @@ int main() {
       game.beginGame(arg1, arg2);
     }
     else if (cmd == "resign") {
-      if (!game.board->isP1Turn()) {
-        cout << endl << "Black resigns. ";
-        game.endGame(0);
+      if (game.isInGame()) {
+        if (!game.board->isP1Turn()) {
+          cout << endl << "Black resigns. ";
+          game.endGame(0);
+        }
+        if (game.board->isP1Turn()) {
+          cout << endl << "White resigns. ";
+          game.endGame(1);
+        }
+        game.reset();
       }
-      if (game.board->isP1Turn()) {
-        cout << endl << "White resigns. ";
-        game.endGame(1);
-      }
-      game.reset();
+      else cout << "Cannot end game that is not in progress." << endl;
     }
     else if (cmd == "move") {
       cin >> arg1 >> arg2;
