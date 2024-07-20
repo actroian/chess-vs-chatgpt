@@ -24,14 +24,12 @@ class Player {
 class Human: public Player {
   public:
     Human(bool);
-    void resign(unique_ptr<Board>& board);
     bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;  
 };
 
 class Computer: public Player {
   public:
     Computer(bool);
-    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
     virtual pair<pair<int, int>, pair<int, int>> chooseMove() = 0;
 };
 

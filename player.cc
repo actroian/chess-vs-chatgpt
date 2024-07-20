@@ -14,20 +14,19 @@ vector<pair<int, int>> Player::possibleMoves(unique_ptr<Board>& board) {
     for(int row = 0; row <= 7; ++row ) {
         for(int col = 0; col <= 7; ++col) {
             if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
-                vector<pair<int, int>> validmoves = board->at(row, col)->validMoves();
-                moves.insert(moves.end(), validmoves.begin(), validmoves.end());
+                vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
+                for (auto& move: validMoves) {
+                    if (board->at(move.first, move.second) != nullptr && board->at(move.first, move.second)->isWhitePiece() != isWhite) {
+                        if (board->moveable(isWhite, move)) moves.emplace_back(move);
+                    }
+                }
             }
         }
-            cout<<endl;
-
     }
     return moves;
 }
 
 Human::Human(bool isWhite): Player{isWhite} {}
-void Human::resign(unique_ptr<Board>& b) {
-    b->clearBoard();
-}
 
 bool Human::move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) {
     std::vector<std::pair<int, int>> allmoves = possibleMoves(b);
@@ -44,11 +43,6 @@ bool Human::move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, i
 }
 
 Computer::Computer(bool isWhite) : Player(isWhite) {}
-bool Computer::move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) {
-    // Base move implementation for Computer if any
-        return false;
-
-}
 
 L1::L1(bool isWhite) : Computer(isWhite) {}
 
