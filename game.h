@@ -13,16 +13,24 @@
 class Game {
     std::ostream& out;
     double wScore, bScore;
-    
+    bool inGame;
+
+    const std::string HUMAN = "human";
+    const std::string COMPUTER = "computer";
+    const std::string L1 = "computer1";
+    const std::string L2 = "computer2";
+    const std::string L3 = "computer3";
+    const std::string L4 = "computer4";
+    std::unique_ptr<Player> createPlayer(const std::string&, bool);
   public:
-    Board& board;
+    std::unique_ptr<Board> board;
     std::unique_ptr<Player> p1, p2;
     Game();
-    Game(std::ostream&, std::unique_ptr<Player>, std::unique_ptr<Player>, Board& b);
+    bool isInGame() const;
     void print() const;
     void reset();
-    void setup();
     void endGame(int);
+    void beginGame(const std::string&, const std::string&);
 };
 
 #endif

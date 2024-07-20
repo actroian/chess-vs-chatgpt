@@ -3,88 +3,23 @@
 #include "globals.h"
 using namespace std;
 
-// This is kind of wrong, but kept just in case
-// Game::Game() : out(cout), board()) {
-//     board.resetBoard();
-// }
-
-Game::Game(ostream& out, unique_ptr<Player> p1, unique_ptr<Player> p2, Board& b)
-    : out(out), wScore(0), bScore(0), board(b), p1(std::move(p1)), p2(std::move(p2)) {
-      
-    board.resetBoard();
+Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique<Board>()} {
+  board->clearBoard();
 }
 
 void Game::reset() {
-  board.resetBoard();
+  board->resetBoard();
 }
-void Game::setup() {
-  string cmd, arg1, arg2;
-
-  while (cin >> cmd) {
-    if (cmd == "+" ) {
-      arg1 = getInput("type of piece", validPieces);
-      arg2 = getInput("position on the board", boardLocations);
-
-      pair<int, int> location = posToInd[arg2];
-
-      if (board.at(location.first, location.second) == nullptr) out << "Placed piece at " << arg2 << endl;
-      else out << "Replaced existing piece at " << arg2 << endl;
-      
-      unique_ptr<Piece> p = nullptr;
-      if (arg1 == "p") {
-        p = make_unique<Pawn>(location.first, location.second, board, board.isP1Turn());
-      }
-      if (arg1 == "k") {
-        p = make_unique<King>(location.first, location.second, board, board.isP1Turn());
-      }
-      if (arg1 == "q") {
-        p = make_unique<Queen>(location.first, location.second, board, board.isP1Turn());
-      }
-      if (arg1 == "b") {
-        p = make_unique<Bishop>(location.first, location.second, board, board.isP1Turn());
-      }
-      if (arg1 == "r") {
-        p = make_unique<Rook>(location.first, location.second, board, board.isP1Turn());
-      }
-      if (arg1 == "n") {
-        p = make_unique<Knight>(location.first, location.second, board, board.isP1Turn());
-      }
-      board.placePiece(location.first, location.second, std::move(p));
-
-      print();
-    }
-    else if (cmd == "-") {
-      arg1 = getInput("position on the board", boardLocations);
-
-      pair<int, int> location = posToInd[arg1];
-      board.removePiece(location.first, location.second);
-
-      out << "Removed piece at: " << arg1 << endl;
-      print();
-    }
-    else if (cmd == "=") {
-      arg1 = getInput("colour", validColours);
-      
-      if (arg1 == validColours[0]) {
-        board.setP1Turn(true);
-        out << "Next turn set to White." << endl;
-      }
-      if (arg1 == validColours[1]) {
-        board.setP1Turn(false);
-        out << "Next turn set to Black." << endl;
-      }
-    }
-    else if (cmd == "done") break;
-  }
-  // TODO: implement setup mode validation
-}
+bool Game::isInGame() const { return inGame; }
 void Game::print() const {
-  board.print(out);
+  board->print(out);
 
-  if (board.isP1Turn()) out << "White to move." << endl;
+  if (board->isP1Turn()) out << "White to move." << endl;
   else out << "Black to move." << endl;
 }
 void Game::endGame(int state) {
+  inGame = false;
+
   switch (state) {
     // doesn't break since we always want default to execute. assume valid state is passed
     case 0:
@@ -103,5 +38,36 @@ void Game::endGame(int state) {
   }
   out << endl << "Final Score:" << endl;
   out << "White: " << wScore << endl;
-  out << "Black: " << bScore << endl;
+  out << "Black: " << bScore << endl << endl;
+}
+
+unique_ptr<Player> Game::createPlayer(const string& input, bool isWhite) {
+  if (input == HUMAN) {
+    return make_unique<Human>(isWhite);
+  }
+  else if (input == COMPUTER) {
+    return make_unique<Computer>(isWhite);
+  }
+  //else if (input == L1) {
+  //  return make_unique<Computer>(isWhite);
+  //}
+  //else if (input == L2) {
+  //  return make_unique<Computer>(isWhite);
+  //}
+  //else if (input == L3) {
+  //  return make_unique<Computer>(isWhite);
+  //}
+  //else if (input == L4) {
+  //  return make_unique<Computer>(isWhite);
+  //}
+  else throw runtime_error("missing strings in validInputs vector");
+}
+void Game::beginGame(const string& p1type, const string& p2type) {
+  inGame = true;
+
+  p1 = createPlayer(p1type, true);
+  p2 = createPlayer(p2type, false);
+  if (!board->isCustom()) board->resetBoard();
+
+  print();
 }
