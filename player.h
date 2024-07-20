@@ -2,26 +2,62 @@
 #define PLAYER_H
 #include <vector>
 #include <string>
+#include "board.h"
+using namespace std;
 
 class Player {
   protected:
-    bool white;
+    bool isWhite;
     bool inCheck;
+    vector<pair<int, int>> possibleMoves(unique_ptr<Board>& board);
+
   public:
     Player(bool);
-    bool isWhite();
+    virtual bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) = 0; 
+    bool isInCheck() const;
+    vector<pair<int, int>> outOfCheckMoves();
+    void setPieces(vector<unique_ptr<Piece>&>);
+    bool isP1();
     virtual ~Player() = 0;
 };
 
 class Human: public Player {
   public:
     Human(bool);
-    void resign();
+    void resign(unique_ptr<Board>& board);
+    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;  
 };
 
 class Computer: public Player {
   public:
     Computer(bool);
+    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    virtual pair<pair<int, int>, pair<int, int>> chooseMove() = 0;
 };
 
+class L1: public Computer {
+  public:
+    L1(bool);
+    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    pair<pair<int, int>, pair<int, int>> chooseMove() override;
+    vector<pair<int, int>> getAllMoves();
+};
+
+class L2: public L1 {
+  public:
+    L2(bool);
+    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    pair<pair<int, int>, pair<int, int>> chooseMove() override;
+    vector<pair<int, int>> captureMoves();
+    vector<pair<int, int>> checkMoves();
+};
+
+class L3: public L2 {
+  public:
+    L3(bool);
+    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    pair<pair<int, int>, pair<int, int>> chooseMove() override;
+    vector<pair<int, int>> checkmateMoves();
+    vector<pair<int, int>> avoidCaptureMoves();
+};
 #endif

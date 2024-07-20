@@ -16,6 +16,7 @@ class Piece {
     Piece(int r, int c, Board& board, bool isWhite);
     virtual std::vector<std::pair<int, int> > validMoves() const = 0;
     virtual char getSymbol() const = 0;
+    bool isWhitePiece();
     virtual ~Piece() {}
 };
 

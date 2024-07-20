@@ -6,6 +6,7 @@ using namespace std;
 // of the square it can go to has an opposite colored piece
 
 Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite} {}
+bool Piece::isWhitePiece(){return isWhite;};
 
 Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
 vector<pair<int, int>> Pawn::validMoves() const {
