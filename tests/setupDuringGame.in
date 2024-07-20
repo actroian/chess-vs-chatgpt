@@ -1,13 +1,10 @@
-setup
-lol
-+ K b2
-= black
-+ k c4
-+ r a1
-- a1
-= WHITE
-done
 game
 human
 human
-q
+setup
++ K b2
+= black
++ Q c3
+- a1
+= WHITE
+done

@@ -4,6 +4,7 @@ using namespace std;
 
 vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};
 vector<const string> validPieces = {"p", "b", "k", "q", "n", "r"};
+vector<const string> validSetupCommands = {"+", "-", "=", "done"};
 vector<const string> validColours = {"white", "black"};
 vector<const string> boardLocations = {
   "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8", 
@@ -37,7 +38,7 @@ string getInput(const string& item, vector<const string>& validInputs) {
 
   while (true) {
     cout << "Please enter a " << item << " (e.g. ";
-    for (int i = 0; i < min(3, static_cast<int>(validInputs.size())); ++i) cout << (i != 0 ? ", " : "") << validInputs[i];
+    for (int i = 0; i < min(4, static_cast<int>(validInputs.size())); ++i) cout << (i != 0 ? ", " : "") << validInputs[i];
     cout << "):" << endl;
 
     cin >> input;
