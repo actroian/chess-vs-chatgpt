@@ -1,5 +1,6 @@
 #include <iostream>
 #include "globals.h"
+#include "player.h"
 using namespace std;
 
 vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};

@@ -1,6 +1,8 @@
 #include "game.h"
 #include "piece.h"
 #include "globals.h"
+#include "player.h"
+#include "board.h"
 using namespace std;
 
 Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique<Board>()} {
@@ -8,7 +10,7 @@ Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique
 }
 
 void Game::reset() {
-  board->resetBoard();
+  board->resetBoard(p1, p2);
 }
 bool Game::isInGame() const { return inGame; }
 void Game::print() const {
@@ -46,18 +48,18 @@ unique_ptr<Player> Game::createPlayer(const string& input, bool isWhite) {
     return make_unique<Human>(isWhite);
   }
   else if (input == COMPUTER) {
-    return make_unique<Computer>(isWhite);
+    return make_unique<L1>(isWhite);
   }
-  //else if (input == L1) {
+  //else if (input == L1input) {
   //  return make_unique<Computer>(isWhite);
   //}
-  //else if (input == L2) {
+  //else if (input == L2input) {
   //  return make_unique<Computer>(isWhite);
   //}
-  //else if (input == L3) {
+  //else if (input == L3input) {
   //  return make_unique<Computer>(isWhite);
   //}
-  //else if (input == L4) {
+  //else if (input == L4input) {
   //  return make_unique<Computer>(isWhite);
   //}
   else throw runtime_error("missing strings in validInputs vector");
@@ -67,7 +69,23 @@ void Game::beginGame(const string& p1type, const string& p2type) {
 
   p1 = createPlayer(p1type, true);
   p2 = createPlayer(p2type, false);
-  if (!board->isCustom()) board->resetBoard();
+  if (!board->isCustom()) board->resetBoard(p1, p2);
 
   print();
+}
+
+void Game::move(pair<int, int> start, pair<int, int> end){
+  cout<<board->isP1Turn()<<' '<<p1->isP1()<<' '<<p2->isP1();
+  if(board->isP1Turn()){
+    cout<<"p1 moving"<<endl;
+    bool piecemoved = p1->move(board, start.first, start.second, end.first, end.second);
+    if(piecemoved) board->setP1Turn(!board->isP1Turn());
+
+  }
+  else{
+    cout<<"p2 moving"<<endl;
+    bool piecemoved = p2->move(board, start.first, start.second, end.first, end.second);
+    if(piecemoved) board->setP1Turn(!board->isP1Turn());
+
+  }
 }

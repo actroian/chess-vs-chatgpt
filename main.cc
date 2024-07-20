@@ -30,7 +30,9 @@ int main() {
     }
     else if (cmd == "move") {
       cin >> arg1 >> arg2;
-
+      pair<int, int> start = posToInd[arg1];
+      pair<int, int> end = posToInd[arg2];
+      game.move(start, end);
     }
     else if (cmd == "setup") {
       if (!game.isInGame()) {

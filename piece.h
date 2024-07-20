@@ -16,6 +16,7 @@ class Piece {
     Piece(int r, int c, Board& board, bool isWhite);
     virtual std::vector<std::pair<int, int> > validMoves() const = 0;
     virtual char getSymbol() const = 0;
+    bool isWhitePiece();
     virtual ~Piece() {}
 };
 
@@ -46,6 +47,7 @@ class Rook: public Piece {
     Rook(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
+    bool isUnmoved() const;
 };
 class Queen: public Piece {
   public:

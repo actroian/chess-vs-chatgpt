@@ -17,10 +17,10 @@ class Game {
 
     const std::string HUMAN = "human";
     const std::string COMPUTER = "computer";
-    const std::string L1 = "computer1";
-    const std::string L2 = "computer2";
-    const std::string L3 = "computer3";
-    const std::string L4 = "computer4";
+    const std::string L1input = "computer1";
+    const std::string L2input = "computer2";
+    const std::string L3input = "computer3";
+    const std::string L4input = "computer4";
     std::unique_ptr<Player> createPlayer(const std::string&, bool);
   public:
     std::unique_ptr<Board> board;
@@ -28,6 +28,7 @@ class Game {
     Game();
     bool isInGame() const;
     void print() const;
+    void move(pair<int, int> start, pair<int, int> end);
     void reset();
     void endGame(int);
     void beginGame(const std::string&, const std::string&);

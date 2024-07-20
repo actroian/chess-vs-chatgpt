@@ -1,5 +1,5 @@
 #include "board.h"
-
+#include "globals.h"
 using namespace std;
 
 Board::Board() : p1Turn{true}, custom{false} {
@@ -11,7 +11,7 @@ Board::Board() : p1Turn{true}, custom{false} {
 }
 
 bool Board::isCustom() const { return custom; }
-void Board::resetBoard() {
+void Board::resetBoard(std::unique_ptr<Player>& p1, std::unique_ptr<Player>& p2) {
     clearBoard();
     board[0][0] = make_unique<Rook>(0, 0, *this, false);
     board[7][0] = make_unique<Rook>(7, 0, *this, true);
@@ -68,8 +68,12 @@ void Board::removePiece(int row, int col) {
     board[row][col] = nullptr;
 }
 
-const unique_ptr<Piece>& Board::at(int row, int col) const {
+unique_ptr<Piece>& Board::at(int row, int col) {
     return board[row][col];
+}
+
+bool Board::moveable(bool isWhite, const pair<int,int>& move) const {
+  return board[move.first][move.second] == nullptr || board[move.first][move.second]->isWhitePiece() != isWhite;
 }
 
 bool Board::isP1Turn() const { return p1Turn; }
