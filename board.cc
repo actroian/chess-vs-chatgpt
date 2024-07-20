@@ -72,6 +72,10 @@ unique_ptr<Piece>& Board::at(int row, int col) {
     return board[row][col];
 }
 
+bool Board::moveable(bool isWhite, const pair<int,int>& move) const {
+  return board[move.first][move.second] == nullptr || board[move.first][move.second]->isWhitePiece() != isWhite;
+}
+
 bool Board::isP1Turn() const { return p1Turn; }
 
 void Board::setP1Turn(bool isP1Turn) { p1Turn = isP1Turn; }

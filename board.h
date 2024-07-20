@@ -24,6 +24,7 @@ class Board{
     std::unique_ptr<Piece>& at(int, int);
     bool isP1Turn() const;
     bool isCustom() const;
+    bool moveable(bool, const std::pair<int,int>&) const;
     void setP1Turn(bool);
     void clearBoard();
 };
