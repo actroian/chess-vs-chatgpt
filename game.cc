@@ -75,15 +75,18 @@ void Game::beginGame(const string& p1type, const string& p2type) {
 }
 
 void Game::move(pair<int, int> start, pair<int, int> end){
-  cout<<board->isP1Turn()<<' '<<p1->isP1()<<' '<<p2->isP1();
+  if(board->at(start.first, start.second) == nullptr){
+    cout<< "Invalid move: no piece at position, try again."<< endl;
+    return;
+  }
   if(board->isP1Turn()){
-    cout<<"p1 moving"<<endl;
+    cout<<"p1 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
     bool piecemoved = p1->move(board, start.first, start.second, end.first, end.second);
     if(piecemoved) board->setP1Turn(!board->isP1Turn());
 
   }
   else{
-    cout<<"p2 moving"<<endl;
+    cout<<"p2 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
     bool piecemoved = p2->move(board, start.first, start.second, end.first, end.second);
     if(piecemoved) board->setP1Turn(!board->isP1Turn());
 

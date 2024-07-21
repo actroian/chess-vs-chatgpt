@@ -107,28 +107,28 @@ char Bishop::getSymbol() const { return isWhite ? 'B' : 'b'; }
 
 Rook::Rook(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
 vector<pair<int, int>> Rook::validMoves() const {
-  vector<pair<int, int>> moves;
+    vector<pair<int, int>> moves;
 
-  // add all valid horizontal moves
-  for (int c = col+1; c <= 7; ++c) {
-    moves.emplace_back(row, c);
-    if (b.at(row,c) != nullptr) break;
-  }
-  for (int c = col-1; c >= 0; --c) {
-    moves.emplace_back(row, c);
-    if (b.at(row,c) != nullptr) break;
-  }
-  // add all valid vertical moves
-  for (int r = row+1; r <= 7; ++r) {
-    moves.emplace_back(r, col);
-    if (b.at(row,col) != nullptr) break;
-  }
-  for (int r = row-1; r >= 0; --r) {
-    moves.emplace_back(r, col);
-    if (b.at(r,col) != nullptr) break;
-  }
+    // add all valid horizontal moves
+    for (int c = col + 1; c <= 7; c++) {
+        moves.emplace_back(row, c);
+        if (b.at(row, c) != nullptr) break;
+    }
+    for (int c = col - 1; c >= 0; c--) {
+        moves.emplace_back(row, c);
+        if (b.at(row, c) != nullptr) break;
+    }
+    // add all valid vertical moves
+    for (int r = row + 1; r <= 7; r++) {
+        moves.emplace_back(r, col);
+        if (b.at(r, col) != nullptr) break;
+    }
+    for (int r = row - 1; r >= 0; r--) {
+        moves.emplace_back(r, col);
+        if (b.at(r, col) != nullptr) break;
+    }
 
-  return moves;
+    return moves;
 }
 char Rook::getSymbol() const { return isWhite ? 'R' : 'r'; }
 bool Rook::isUnmoved() const { return unmoved; }

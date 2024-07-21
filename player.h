@@ -3,13 +3,15 @@
 #include <vector>
 #include <string>
 #include "board.h"
+#include "move.h"
 using namespace std;
+class Move;
 
 class Player {
   protected:
     bool isWhite;
     bool inCheck;
-    vector<pair<int, int>> possibleMoves(unique_ptr<Board>& board);
+    vector<Move> possibleMoves(unique_ptr<Board>& board);
 
   public:
     Player(bool);

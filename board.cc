@@ -106,23 +106,25 @@ void Board::setup() {
       pair<int, int> location = posToInd[arg2];
       
       unique_ptr<Piece> p = nullptr;
+      bool isWhite = isupper(arg1[0]);
+      arg1 = tolower(arg1[0]);
       if (arg1 == "p") {
-        p = make_unique<Pawn>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<Pawn>(location.first, location.second, *this, isWhite);
       }
       if (arg1 == "k") {
-        p = make_unique<King>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<King>(location.first, location.second, *this, isWhite);
       }
       if (arg1 == "q") {
-        p = make_unique<Queen>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<Queen>(location.first, location.second, *this, isWhite);
       }
       if (arg1 == "b") {
-        p = make_unique<Bishop>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<Bishop>(location.first, location.second, *this, isWhite);
       }
       if (arg1 == "r") {
-        p = make_unique<Rook>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<Rook>(location.first, location.second, *this, isWhite);
       }
       if (arg1 == "n") {
-        p = make_unique<Knight>(location.first, location.second, *this, isP1Turn());
+          p = make_unique<Knight>(location.first, location.second, *this, isWhite);
       }
 
       if (at(location.first, location.second) == nullptr) cout << "Placed piece " << p->getSymbol() << " at " << arg2 << endl;
