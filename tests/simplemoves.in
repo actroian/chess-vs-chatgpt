@@ -1,0 +1,16 @@
+setup
++ k e8
++ p e7
+= black
++ K e1
++ P e2
+= white
+done
+game
+human
+human
+move e2 e3
+move e7 e6
+move e3 e4
+move e6 e5
+q

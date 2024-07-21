@@ -4,7 +4,7 @@
 using namespace std;
 
 vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};
-vector<const string> validPieces = {"p", "b", "k", "q", "n", "r"};
+vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
 vector<const string> validSetupCommands = {"+", "-", "=", "done"};
 vector<const string> validColours = {"white", "black"};
 vector<const string> boardLocations = {
@@ -45,7 +45,7 @@ string getInput(const string& item, vector<const string>& validInputs) {
     cin >> input;
 
     // in-place conversion of input to lowercase
-    transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
+    if(validInputs != validPieces) transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
 
     for (const auto& s: validInputs) {
       if (input == s) {
