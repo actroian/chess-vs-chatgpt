@@ -9,7 +9,7 @@ class Player {
   protected:
     bool isWhite;
     bool inCheck;
-    vector<pair<int, int>> possibleMoves(unique_ptr<Board>& board);
+    vector<pair<pair<int, int>,pair<int, int>>> possibleMoves(unique_ptr<Board>& board);
 
   public:
     Player(bool);

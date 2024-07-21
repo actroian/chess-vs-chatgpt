@@ -9,15 +9,16 @@ Player::Player(bool isWhite): isWhite{isWhite}, inCheck{false} {}
 Player::~Player() {}
 bool Player::isP1() { return isWhite; }
 
-vector<pair<int, int>> Player::possibleMoves(unique_ptr<Board>& board) {
-    vector<pair<int, int>> moves;
+vector<pair<pair<int, int>,pair<int, int>>> Player::possibleMoves(unique_ptr<Board>& board) {
+    vector<pair<pair<int, int>,pair<int, int>>> moves;
     for(int row = 0; row <= 7; ++row ) {
         for(int col = 0; col <= 7; ++col) {
             if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
                 vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
+                pair<int, int> currentposition = make_pair(row, col);
                 for (auto& move: validMoves) {
                     if (board->at(move.first, move.second) == nullptr || board->at(move.first, move.second)->isWhitePiece() != isWhite) {
-                        if (board->moveable(isWhite, move)) moves.emplace_back(move);
+                        if (board->moveable(isWhite, move)) moves.emplace_back(make_pair(currentposition, move));
                     }
                 }
             }
@@ -29,8 +30,9 @@ vector<pair<int, int>> Player::possibleMoves(unique_ptr<Board>& board) {
 Human::Human(bool isWhite): Player{isWhite} {}
 
 bool Human::move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) {
-    std::vector<std::pair<int, int>> allmoves = possibleMoves(b);
-    if (std::find(allmoves.begin(), allmoves.end(), std::make_pair(endrow, endcol)) != allmoves.end()) {
+    vector<pair<pair<int, int>,pair<int, int>>> allmoves = possibleMoves(b);
+    pair<pair<int, int>,pair<int, int>> currentmove = make_pair(make_pair(startrow, startcol), make_pair(endrow, endcol));
+    if (std::find(allmoves.begin(), allmoves.end(), currentmove) != allmoves.end()) {
         b->placePiece(endrow, endcol, std::move(b->at(startrow, startcol)));
         b->print(cout);
         return true;
