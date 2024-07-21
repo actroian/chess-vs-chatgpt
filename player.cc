@@ -16,7 +16,7 @@ vector<pair<int, int>> Player::possibleMoves(unique_ptr<Board>& board) {
             if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
                 vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
                 for (auto& move: validMoves) {
-                    if (board->at(move.first, move.second) != nullptr && board->at(move.first, move.second)->isWhitePiece() != isWhite) {
+                    if (board->at(move.first, move.second) == nullptr || board->at(move.first, move.second)->isWhitePiece() != isWhite) {
                         if (board->moveable(isWhite, move)) moves.emplace_back(move);
                     }
                 }
