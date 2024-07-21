@@ -75,7 +75,6 @@ void Game::beginGame(const string& p1type, const string& p2type) {
 }
 
 void Game::move(pair<int, int> start, pair<int, int> end){
-  cout<<board->isP1Turn()<<' '<<p1->isP1()<<' '<<p2->isP1();
   if(board->isP1Turn()){
     cout<<"p1 moving"<<endl;
     bool piecemoved = p1->move(board, start.first, start.second, end.first, end.second);

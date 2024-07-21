@@ -1,6 +1,7 @@
 #include "player.h"
 #include "piece.h"
 #include "board.h"
+#include "move.h"
 #include <algorithm>
 
 using namespace std;
@@ -9,16 +10,18 @@ Player::Player(bool isWhite): isWhite{isWhite}, inCheck{false} {}
 Player::~Player() {}
 bool Player::isP1() { return isWhite; }
 
-vector<pair<pair<int, int>,pair<int, int>>> Player::possibleMoves(unique_ptr<Board>& board) {
-    vector<pair<pair<int, int>,pair<int, int>>> moves;
+vector<Move> Player::possibleMoves(unique_ptr<Board>& board) {
+    vector<Move> moves;
     for(int row = 0; row <= 7; ++row ) {
         for(int col = 0; col <= 7; ++col) {
             if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
                 vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
-                pair<int, int> currentposition = make_pair(row, col);
-                for (auto& move: validMoves) {
-                    if (board->at(move.first, move.second) == nullptr || board->at(move.first, move.second)->isWhitePiece() != isWhite) {
-                        if (board->moveable(isWhite, move)) moves.emplace_back(make_pair(currentposition, move));
+                for (auto& validmove: validMoves) {
+                    if (board->at(validmove.first, validmove.second) == nullptr || board->at(validmove.first, validmove.second)->isWhitePiece() != isWhite) {
+                        if (board->moveable(isWhite, validmove)) {
+                            Move move = Move(row, col, validmove.first, validmove.second, board);
+                            moves.push_back(move);
+                        }
                     }
                 }
             }
@@ -30,8 +33,8 @@ vector<pair<pair<int, int>,pair<int, int>>> Player::possibleMoves(unique_ptr<Boa
 Human::Human(bool isWhite): Player{isWhite} {}
 
 bool Human::move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) {
-    vector<pair<pair<int, int>,pair<int, int>>> allmoves = possibleMoves(b);
-    pair<pair<int, int>,pair<int, int>> currentmove = make_pair(make_pair(startrow, startcol), make_pair(endrow, endcol));
+    vector<Move> allmoves = possibleMoves(b);
+    Move currentmove = Move(startrow, startcol, endrow, endcol, b);
     if (std::find(allmoves.begin(), allmoves.end(), currentmove) != allmoves.end()) {
         b->placePiece(endrow, endcol, std::move(b->at(startrow, startcol)));
         b->print(cout);
