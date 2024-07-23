@@ -11,13 +11,14 @@ class Player {
   protected:
     bool isWhite;
     bool inCheck;
-    vector<Move> possibleMoves(unique_ptr<Board>& board);
-
+    
   public:
     Player(bool);
-    virtual bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) = 0; 
-    bool isInCheck() const;
+    virtual bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) = 0; 
+    vector<Move> possibleMoves(unique_ptr<Board>& board);
     vector<pair<int, int>> outOfCheckMoves();
+    bool isInCheck() const;
+    void setInCheck(bool);
     void setPieces(vector<unique_ptr<Piece>&>);
     bool isP1();
     virtual ~Player() = 0;
@@ -26,7 +27,7 @@ class Player {
 class Human: public Player {
   public:
     Human(bool);
-    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;  
+    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;  
 };
 
 class Computer: public Player {
@@ -38,7 +39,7 @@ class Computer: public Player {
 class L1: public Computer {
   public:
     L1(bool);
-    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
     pair<pair<int, int>, pair<int, int>> chooseMove() override;
     vector<pair<int, int>> getAllMoves();
 };
@@ -46,7 +47,7 @@ class L1: public Computer {
 class L2: public L1 {
   public:
     L2(bool);
-    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
     pair<pair<int, int>, pair<int, int>> chooseMove() override;
     vector<pair<int, int>> captureMoves();
     vector<pair<int, int>> checkMoves();
@@ -55,7 +56,7 @@ class L2: public L1 {
 class L3: public L2 {
   public:
     L3(bool);
-    bool move(unique_ptr<Board>& b, int startrow, int startcol, int endrow, int endcol) override;
+    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
     pair<pair<int, int>, pair<int, int>> chooseMove() override;
     vector<pair<int, int>> checkmateMoves();
     vector<pair<int, int>> avoidCaptureMoves();
