@@ -29,11 +29,12 @@ int main() {
       else cout << "Cannot end game that is not in progress." << endl;
     }
     else if (cmd == "move") {
-      cin >> arg1 >> arg2;
-      cout << "moving from " << arg1 <<" to "<<arg2<< endl;
-      pair<int, int> start = posToInd[arg1];
-      pair<int, int> end = posToInd[arg2];
-      game.move(start, end);
+      arg1 = getInput("location of piece you want to move", boardLocations);
+      arg2 = getInput("location you want to move the piece to", boardLocations);
+      bool successfulMove;
+      do {
+        successfulMove = game.move(arg1, arg2);
+      } while (!successfulMove);
     }
     else if (cmd == "setup") {
       if (!game.isInGame()) {

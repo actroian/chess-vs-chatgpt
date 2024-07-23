@@ -89,6 +89,31 @@ void Board::clearBoard() {
     custom = false;
 }
 
+unique_ptr<Piece> Board::createPiece(string& pieceType, const pair<int,int>& location) const {
+  bool isWhite = isupper(pieceType[0]);
+  pieceType = tolower(pieceType[0]);
+
+  Board& nonConstThis = const_cast<Board&>(*this);
+  if (pieceType == "p") {
+    return make_unique<Pawn>(location.first, location.second, nonConstThis, isWhite);
+  }
+  if (pieceType == "k") {
+    return make_unique<King>(location.first, location.second, nonConstThis, isWhite);
+  }
+  if (pieceType == "q") {
+    return make_unique<Queen>(location.first, location.second, nonConstThis, isWhite);
+  }
+  if (pieceType == "b") {
+    return make_unique<Bishop>(location.first, location.second, nonConstThis, isWhite);
+  }
+  if (pieceType == "r") {
+    return make_unique<Rook>(location.first, location.second, nonConstThis, isWhite);
+  }
+  if (pieceType == "n") {
+    return make_unique<Knight>(location.first, location.second, nonConstThis, isWhite);
+  }
+  return nullptr;
+}
 void Board::setup() {
   clearBoard();
   
@@ -105,27 +130,7 @@ void Board::setup() {
 
       pair<int, int> location = posToInd[arg2];
       
-      unique_ptr<Piece> p = nullptr;
-      bool isWhite = isupper(arg1[0]);
-      arg1 = tolower(arg1[0]);
-      if (arg1 == "p") {
-          p = make_unique<Pawn>(location.first, location.second, *this, isWhite);
-      }
-      if (arg1 == "k") {
-          p = make_unique<King>(location.first, location.second, *this, isWhite);
-      }
-      if (arg1 == "q") {
-          p = make_unique<Queen>(location.first, location.second, *this, isWhite);
-      }
-      if (arg1 == "b") {
-          p = make_unique<Bishop>(location.first, location.second, *this, isWhite);
-      }
-      if (arg1 == "r") {
-          p = make_unique<Rook>(location.first, location.second, *this, isWhite);
-      }
-      if (arg1 == "n") {
-          p = make_unique<Knight>(location.first, location.second, *this, isWhite);
-      }
+      unique_ptr<Piece> p = createPiece(arg1, location);
 
       if (at(location.first, location.second) == nullptr) cout << "Placed piece " << p->getSymbol() << " at " << arg2 << endl;
       else cout << "Replaced existing piece at " << arg2 << endl;
