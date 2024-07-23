@@ -27,8 +27,9 @@ class Game {
     std::unique_ptr<Player> p1, p2;
     Game();
     bool isInGame() const;
+    bool move(const string&, const string&);
     void print() const;
-    void move(pair<int, int> start, pair<int, int> end);
+    void updateInCheck();
     void reset();
     void endGame(int);
     void beginGame(const std::string&, const std::string&);
