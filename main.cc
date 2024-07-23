@@ -31,10 +31,11 @@ int main() {
     else if (cmd == "move") {
       arg1 = getInput("location of piece you want to move", boardLocations);
       arg2 = getInput("location you want to move the piece to", boardLocations);
-      bool successfulMove;
-      do {
-        successfulMove = game.move(arg1, arg2);
-      } while (!successfulMove);
+      
+      // invalid move prompts for a new command
+      if (!game.move(arg1, arg2)) continue;
+
+      game.print();
     }
     else if (cmd == "setup") {
       if (!game.isInGame()) {
