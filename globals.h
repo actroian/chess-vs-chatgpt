@@ -13,6 +13,7 @@ extern std::vector<const std::string> validColours;
 extern std::map<const std::string, std::pair<int,int>> posToInd;
 extern std::vector<const std::string> validPlayers;
 extern std::vector<const std::string> validSetupCommands;
+extern std::vector<const std::string> validPromotions;
 
 void initializePosToInd();
 std::string getInput(const std::string&, std::vector<const std::string>&);

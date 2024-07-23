@@ -5,6 +5,7 @@ using namespace std;
 
 vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};
 vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
+vector<const string> validPromotions = {"r", "k", "b", "q"};
 vector<const string> validSetupCommands = {"+", "-", "=", "done"};
 vector<const string> validColours = {"white", "black"};
 vector<const string> boardLocations = {
