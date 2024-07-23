@@ -3,6 +3,10 @@
 #include "globals.h"
 #include "player.h"
 #include "board.h"
+#include "L1.h"
+#include "L2.h"
+#include "L3.h"
+#include "L4.h"
 using namespace std;
 
 Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique<Board>()} {
