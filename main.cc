@@ -39,7 +39,7 @@ int main() {
     }
     else if (cmd == "setup") {
       if (!game.isInGame()) {
-        game.board->setup();
+        game.setup();
       }
       else cout << "Cannot enter setup mode during a match." << endl;
     }

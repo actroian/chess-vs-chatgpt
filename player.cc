@@ -6,6 +6,7 @@ using namespace std;
 
 Player::Player(bool isWhite): isWhite{isWhite}, inCheck{false} {}
 Player::~Player() {}
+bool Player::isInCheck() const { return inCheck; }
 bool Player::isP1() { return isWhite; }
 void Player::setInCheck(bool inCheck) { 
     this->inCheck = inCheck; 

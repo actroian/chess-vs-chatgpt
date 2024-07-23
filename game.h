@@ -36,6 +36,7 @@ class Game {
     void print() const;
     void updateState();
     void reset();
+    void setup();
     void endGame(int);
     void beginGame(const std::string&, const std::string&);
 };

@@ -11,7 +11,7 @@ Board::Board() : p1Turn{true}, custom{false}, lastMove{{-1,-1}, {-1,-1}} {
 }
 
 bool Board::isCustom() const { return custom; }
-void Board::resetBoard(std::unique_ptr<Player>& p1, std::unique_ptr<Player>& p2) {
+void Board::resetBoard() {
     clearBoard();
     board[0][0] = make_unique<Rook>(0, 0, *this, false);
     board[7][0] = make_unique<Rook>(7, 0, *this, true);
@@ -115,6 +115,35 @@ unique_ptr<Piece> Board::createPiece(string& pieceType, const pair<int,int>& loc
   }
   return nullptr;
 }
+
+bool Board::validateBoard() {
+  // check for exactly one king
+  pair<int,int> whiteKblackK{0,0};
+  for (int r = 0; r <= 7; r++) {
+    for (int c = 0; c <= 7; c++) {
+      if (at(r,c) != nullptr) {
+        if (at(r,c)->getSymbol() == 'K') ++whiteKblackK.first;
+        else if (at(r,c)->getSymbol() == 'k') ++whiteKblackK.second;
+      }
+    }
+  }
+  if (whiteKblackK.first != 1 || whiteKblackK.second != 1) {
+    cout << "Missing/Too many kings. Please setup a valid board." << endl;
+    return false;
+  }
+
+  // check that pawns aren't in first or last row
+  for (int c = 0; c <= 7; c++) {
+    if ((at(0, c) != nullptr && tolower(at(0, c)->getSymbol()) == 'p') ||
+      (at(7, c) != nullptr && tolower(at(7, c)->getSymbol()) == 'p')) {
+        cout << "Pawn placed in first or last row. Please setup a valid board." << endl;
+        return false;
+      }
+  }
+  
+  return true;
+}
+
 void Board::setup() {
   clearBoard();
   
@@ -164,7 +193,7 @@ void Board::setup() {
     }
     else if (cmd == "done") break;
   }
-  // TODO: implement setup mode validation
+  if (!validateBoard()) setup();
 }
 
 Move Board::getLastMove() const { return lastMove.getMove(); }
