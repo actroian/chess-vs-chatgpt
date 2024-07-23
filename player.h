@@ -30,35 +30,4 @@ class Human: public Player {
     bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;  
 };
 
-class Computer: public Player {
-  public:
-    Computer(bool);
-    virtual pair<pair<int, int>, pair<int, int>> chooseMove() = 0;
-};
-
-class L1: public Computer {
-  public:
-    L1(bool);
-    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
-    pair<pair<int, int>, pair<int, int>> chooseMove() override;
-    vector<pair<int, int>> getAllMoves();
-};
-
-class L2: public L1 {
-  public:
-    L2(bool);
-    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
-    pair<pair<int, int>, pair<int, int>> chooseMove() override;
-    vector<pair<int, int>> captureMoves();
-    vector<pair<int, int>> checkMoves();
-};
-
-class L3: public L2 {
-  public:
-    L3(bool);
-    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;
-    pair<pair<int, int>, pair<int, int>> chooseMove() override;
-    vector<pair<int, int>> checkmateMoves();
-    vector<pair<int, int>> avoidCaptureMoves();
-};
 #endif
