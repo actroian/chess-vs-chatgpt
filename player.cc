@@ -26,8 +26,9 @@ bool Player::move(unique_ptr<Board>& b, const pair<int,int>& start, const pair<i
     }
 
     // check for pawn promotion
-    if ((end.first == 7 && isP1()) || (end.first == 0 && !isP1())) {
+    if ((end.first == 0 && isP1()) || (end.first == 7 && !isP1())) {
       string promotion = getInput("pawn promotion", validPromotions);
+      promotion = isP1() ? toupper(promotion[0]) : tolower(promotion[0]);
       b->placePiece(end.first, end.second, b->createPiece(promotion, end));
       cout << "Pawn promoted to " << promotion << endl;
     }

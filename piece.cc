@@ -38,8 +38,8 @@ vector<pair<int, int>> Pawn::validMoves() const {
   else {
     if (row+1 <= 7 && b.at(row+1, col) == nullptr) moves.emplace_back(row+1, col);
     if (unmoved && row+2 <= 7 && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
-    if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && !b.at(row+1, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
-    if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && !b.at(row+1, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
+    if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
+    if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
     
     // en passant
     if (pawnDoubleMovedLast) {
