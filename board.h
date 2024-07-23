@@ -22,6 +22,7 @@ class Board{
     void placePiece(int, int, std::unique_ptr<Piece>&&);
     void removePiece(int, int);
     std::unique_ptr<Piece>& at(int, int);
+    std::unique_ptr<Piece> createPiece(std::string&, const std::pair<int,int>&) const;
     bool isP1Turn() const;
     bool isCustom() const;
     bool moveable(bool, const std::pair<int,int>&) const;

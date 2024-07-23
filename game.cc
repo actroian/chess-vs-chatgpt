@@ -74,21 +74,46 @@ void Game::beginGame(const string& p1type, const string& p2type) {
   print();
 }
 
-void Game::move(pair<int, int> start, pair<int, int> end){
-  if(board->at(start.first, start.second) == nullptr){
-    cout<< "Invalid move: no piece at position, try again."<< endl;
-    return;
+void Game::updateInCheck() {
+  bool checkWhite = board->isP1Turn();
+  bool inCheck = false;
+
+  // if p1's turn is coming up, we check if p2's current possible moves include capturing the king and vice versa
+  vector<Move> moves = checkWhite ? p2->possibleMoves(board) : p1->possibleMoves(board);
+  for (auto& move: moves) {
+    auto loc = move.getEndPos();
+    if (towlower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
+      inCheck = true;
+      break;
+    } 
   }
+
+  checkWhite ? p1->setInCheck(inCheck) : p2->setInCheck(inCheck);
+}
+
+bool Game::move(const string& startLoc, const string& endLoc){
+  pair<int, int> start = posToInd[startLoc];
+  pair<int, int> end = posToInd[endLoc];
+
+  if(board->at(start.first, start.second) == nullptr){
+    cout << "Invalid move: no piece at position, try again."<< endl;
+    return false;
+  }
+
+  bool piecemoved;
   if(board->isP1Turn()){
     cout<<"p1 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    bool piecemoved = p1->move(board, start.first, start.second, end.first, end.second);
-    if(piecemoved) board->setP1Turn(!board->isP1Turn());
-
+    piecemoved = p1->move(board, start, end);
   }
   else{
     cout<<"p2 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    bool piecemoved = p2->move(board, start.first, start.second, end.first, end.second);
-    if(piecemoved) board->setP1Turn(!board->isP1Turn());
-
+    piecemoved = p2->move(board, start, end);
   }
+
+  if (!piecemoved) {
+    return false;
+  }
+  board->setP1Turn(!board->isP1Turn());
+  updateInCheck();
+  return true;
 }

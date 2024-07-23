@@ -22,7 +22,6 @@ class Piece {
 
 class Pawn: public Piece {
     bool unmoved;
-    void promote();
   public:
     Pawn(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;

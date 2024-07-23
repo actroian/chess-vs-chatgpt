@@ -8,16 +8,14 @@ using namespace std;
 
 class Move {
   protected:
-    int startrow;
-    int startcol;
-    int endrow;
-    int endcol;
+    pair<int, int> start;
+    pair<int, int> end;
     bool isWhiteAttacking;
     bool isCapturingMove;
     unique_ptr<Board>& board;
 
   public:
-    Move(int startrow, int startcol, int endrow, int endcol, unique_ptr<Board>& board);
+    Move(pair<int, int>, pair<int, int>, unique_ptr<Board>& board);
     pair<int, int> getStartPos();
     pair<int, int> getEndPos();
     pair<pair<int, int>, pair<int, int> > getMove();
