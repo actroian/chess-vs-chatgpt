@@ -2,7 +2,7 @@
 #include "globals.h"
 using namespace std;
 
-Board::Board() : p1Turn{true}, custom{false} {
+Board::Board() : p1Turn{true}, custom{false}, lastMove{{-1,-1}, {-1,-1}} {
     // initialize empty board
   for (int i = 0; i <= 7; ++i) {
     vector<unique_ptr<Piece>> row(8);
@@ -62,6 +62,7 @@ void Board::print(std::ostream& out) const {
 
 void Board::placePiece(int row, int col, unique_ptr<Piece>&& piece) {
   board[row][col] = std::move(piece);
+  board[row][col]->setPosition(row, col);
 }
 
 void Board::removePiece(int row, int col) {
@@ -165,3 +166,6 @@ void Board::setup() {
   }
   // TODO: implement setup mode validation
 }
+
+Move Board::getLastMove() const { return lastMove.getMove(); }
+void Board::setLastMove(const Move& m) { lastMove = m; }
