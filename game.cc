@@ -103,11 +103,11 @@ bool Game::move(const string& startLoc, const string& endLoc){
   bool piecemoved;
   if(board->isP1Turn()){
     cout<<"p1 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    piecemoved = p1->move(board, start.first, start.second, end.first, end.second);
+    piecemoved = p1->move(board, start, end);
   }
   else{
     cout<<"p2 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    piecemoved = p2->move(board, start.first, start.second, end.first, end.second);
+    piecemoved = p2->move(board, start, end);
   }
 
   if (!piecemoved) {
