@@ -9,7 +9,9 @@ class Player;
 
 class Computer: public Player {
   public:
-    Computer(bool) : Player(isWhite) {};
+    Computer(bool isWhite) : Player(isWhite) {}
     virtual pair<pair<int, int>, pair<int, int>> chooseMove() = 0;
 };
+
+
 #endif
