@@ -11,17 +11,18 @@ class Piece {
     int row;
     int col;
     Board& b;
-    bool isWhite;
+    bool isWhite, unmoved;
   public:
     Piece(int r, int c, Board& board, bool isWhite);
     virtual std::vector<std::pair<int, int> > validMoves() const = 0;
     virtual char getSymbol() const = 0;
     bool isWhitePiece();
+    void moved();
+    void setPosition(int, int);
     virtual ~Piece() {}
 };
 
 class Pawn: public Piece {
-    bool unmoved;
   public:
     Pawn(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;

@@ -7,8 +7,13 @@
 #include <memory>
 #include <map>
 #include "player.h"
-#include "piece.h"
-#include "board.h"
+#include "L1.h"
+#include "L2.h"
+#include "L3.h"
+#include "L4.h"
+
+class Player;
+class Board;
 
 class Game {
     std::ostream& out;
@@ -27,9 +32,9 @@ class Game {
     std::unique_ptr<Player> p1, p2;
     Game();
     bool isInGame() const;
-    bool move(const string&, const string&);
+    bool move(const std::string&, const std::string&);
     void print() const;
-    void updateInCheck();
+    void updateState();
     void reset();
     void endGame(int);
     void beginGame(const std::string&, const std::string&);

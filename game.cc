@@ -1,12 +1,5 @@
 #include "game.h"
-#include "piece.h"
-#include "globals.h"
-#include "player.h"
-#include "board.h"
-#include "L1.h"
-#include "L2.h"
-#include "L3.h"
-#include "L4.h"
+
 using namespace std;
 
 Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique<Board>()} {
@@ -78,21 +71,26 @@ void Game::beginGame(const string& p1type, const string& p2type) {
   print();
 }
 
-void Game::updateInCheck() {
+void Game::updateState() {
+  // determine if a player is in check
   bool checkWhite = board->isP1Turn();
   bool inCheck = false;
 
   // if p1's turn is coming up, we check if p2's current possible moves include capturing the king and vice versa
   vector<Move> moves = checkWhite ? p2->possibleMoves(board) : p1->possibleMoves(board);
   for (auto& move: moves) {
-    auto loc = move.getEndPos();
-    if (towlower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
+    auto loc = move.end;
+    if (board->at(loc.first, loc.second) != nullptr && tolower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
       inCheck = true;
       break;
     } 
   }
 
   checkWhite ? p1->setInCheck(inCheck) : p2->setInCheck(inCheck);
+
+  // update that the piece has been moved
+  Move lastMove = board->getLastMove();
+  board->at(lastMove.end.first, lastMove.end.second)->moved();
 }
 
 bool Game::move(const string& startLoc, const string& endLoc){
@@ -117,7 +115,9 @@ bool Game::move(const string& startLoc, const string& endLoc){
   if (!piecemoved) {
     return false;
   }
+
   board->setP1Turn(!board->isP1Turn());
-  updateInCheck();
+  board->setLastMove({start, end});
+  updateState();
   return true;
 }

@@ -1,26 +1,52 @@
 #include "piece.h"
-#include "game.h"
+#include "board.h"
 using namespace std;
 
-// TODO: fix valid moves so it adds a valid move on the first instance
-// of the square it can go to has an opposite colored piece
-
-Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite} {}
+Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite}, unmoved{true} {}
 bool Piece::isWhitePiece(){return isWhite;};
+void Piece::moved() { unmoved = false; }
+void Piece::setPosition(int newRow, int newCol) { row = newRow; col = newCol; }
 
-Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
+Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Pawn::validMoves() const {
   vector<pair<int, int>> moves;
+  Move lastMove = b.getLastMove();
+
+  // check if last move was by a pawn and it moved two squares
+  bool pawnDoubleMovedLast =
+    lastMove != NO_LAST_MOVE &&
+    tolower(
+      b.at(lastMove.end.first, lastMove.end.second)
+      ->getSymbol()
+    ) == 'p' && 
+    abs(lastMove.start.first - lastMove.end.first) == 2
+  ;
 
   if (isWhite) {
     if (row-1 >= 0 && b.at(row-1, col) == nullptr) moves.emplace_back(row-1, col);
     if (unmoved && row-2 >= 0 && b.at(row-2, col) == nullptr) moves.emplace_back(row-2, col);
-    // TODO: en passant
+    if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) moves.emplace_back(row-1, col-1);
+    if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) moves.emplace_back(row-1, col+1);
+    
+    // en passant
+    if (pawnDoubleMovedLast) {
+      int r = row;
+      if (lastMove.end == make_pair(r, col+1) && !b.at(row, col+1)->isWhitePiece()) moves.emplace_back(row-1, col+1);
+      if (lastMove.end == make_pair(r, col-1) && !b.at(row, col-1)->isWhitePiece()) moves.emplace_back(row-1, col-1);
+    }
   }
   else {
     if (row+1 <= 7 && b.at(row+1, col) == nullptr) moves.emplace_back(row+1, col);
     if (unmoved && row+2 <= 7 && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
-    // TODO: en passant
+    if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && !b.at(row+1, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
+    if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && !b.at(row+1, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
+    
+    // en passant
+    if (pawnDoubleMovedLast) {
+      int r = row;
+      if (lastMove.end == make_pair(r, col+1) && b.at(row, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
+      if (lastMove.end == make_pair(r, col-1) && b.at(row, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
+    }
   }
 
   return moves;
@@ -39,8 +65,7 @@ vector<pair<int, int>> King::validMoves() const {
       }
     }
   }
-  if (canCastle) {
-    // TODO: switch canCastle to false if king is moved
+  if (canCastle && unmoved) {
     auto piece_ptr = b.at(row, 0).get(); // Get the raw pointer from the unique_ptr
     Rook* rook_ptr = dynamic_cast<Rook*>(piece_ptr); // Perform the dynamic cast
     if (rook_ptr) {
@@ -105,7 +130,7 @@ vector<pair<int, int>> Bishop::validMoves() const {
 }
 char Bishop::getSymbol() const { return isWhite ? 'B' : 'b'; }
 
-Rook::Rook(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite}, unmoved{true} {}
+Rook::Rook(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Rook::validMoves() const {
     vector<pair<int, int>> moves;
 
