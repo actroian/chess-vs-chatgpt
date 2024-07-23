@@ -2,18 +2,18 @@
 #include "board.h"
 using namespace std;
 
-Move::Move(int startrow, int startcol, int endrow, int endcol, unique_ptr<Board>& board)
-    : startrow(startrow), startcol(startcol), endrow(endrow), endcol(endcol), board(board){
-        isWhiteAttacking = board->at(startrow, startcol)->isWhitePiece();
-        isCapturingMove = board->at(endrow, endcol) == nullptr;
+Move::Move(pair<int, int> start, pair<int, int> end, unique_ptr<Board>& board)
+    : start(start), end(end), board(board){
+        isWhiteAttacking = board->at(start.first, start.second)->isWhitePiece();
+        isCapturingMove = board->at(end.first, end.second) == nullptr;
       }
 
 pair<int, int> Move::getStartPos() {
-    return make_pair(startrow, startcol);
+    return make_pair(start.first, start.second);
 }
 
 pair<int, int> Move::getEndPos() {
-    return make_pair(endrow, endcol);
+    return make_pair(end.first, end.second);
 }
 
 pair<pair<int, int>, pair<int, int>> Move::getMove() {
@@ -21,10 +21,8 @@ pair<pair<int, int>, pair<int, int>> Move::getMove() {
 }
 
 bool Move::operator==(const Move& other) const {
-    return startrow == other.startrow &&
-           startcol == other.startcol &&
-           endrow == other.endrow &&
-           endcol == other.endcol &&
+    return start == other.start &&
+           end == other.end &&
            isWhiteAttacking == other.isWhiteAttacking &&
            isCapturingMove == other.isCapturingMove;
 }
