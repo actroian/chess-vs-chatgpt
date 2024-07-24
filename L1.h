@@ -11,7 +11,6 @@ class L1: public Player {
   public:
     L1(bool);
     Move chooseMove(unique_ptr<Board>& b) override;
-    vector<Move> getAllMoves();
 };
 
 #endif
