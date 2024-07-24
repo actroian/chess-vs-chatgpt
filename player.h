@@ -14,7 +14,8 @@ class Player {
     
   public:
     Player(bool);
-    virtual bool move(std::unique_ptr<Board>& b, const std::pair<int, int>&, const std::pair<int, int>&) = 0; 
+    virtual Move chooseMove(std::unique_ptr<Board>& b) = 0;
+    bool move(std::unique_ptr<Board>& b); 
     std::vector<Move> possibleMoves(std::unique_ptr<Board>& board);
     std::vector<std::pair<int, int>> outOfCheckMoves();
     bool isInCheck() const;
@@ -27,7 +28,7 @@ class Player {
 class Human: public Player {
   public:
     Human(bool);
-    bool move(std::unique_ptr<Board>& b, const std::pair<int, int>&, const std::pair<int, int>&) override;  
+    Move chooseMove(std::unique_ptr<Board>& b) override;
 };
 
 #endif

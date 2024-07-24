@@ -10,7 +10,6 @@
 #include "L1.h"
 #include "L2.h"
 #include "L3.h"
-#include "L4.h"
 
 class Player;
 class Board;
@@ -32,7 +31,7 @@ class Game {
     std::unique_ptr<Player> p1, p2;
     Game();
     bool isInGame() const;
-    bool move(const std::string&, const std::string&);
+    bool move();
     void print() const;
     void updateState(bool setupMode = false);
     void reset();
