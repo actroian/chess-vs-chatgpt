@@ -15,6 +15,10 @@ bool Game::isInGame() const { return inGame; }
 void Game::print() const {
   board->print(out);
 
+  if (p1->isInCheck() || p2->isInCheck()) {
+    cout << (p1->isInCheck() ? "White " : "Black ") << "is in check! ";
+  }
+
   if (board->isP1Turn()) out << "White to move." << endl;
   else out << "Black to move." << endl;
 }
