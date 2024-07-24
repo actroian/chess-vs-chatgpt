@@ -3,7 +3,7 @@
 #include "player.h"
 using namespace std;
 
-vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};
+vector<const string> validPlayers = {"human", "computer1", "computer2", "computer3"};
 vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
 vector<const string> validPromotions = {"r", "k", "b", "q"};
 vector<const string> validSetupCommands = {"+", "-", "=", "done"};
@@ -44,7 +44,7 @@ string getInput(const string& item, vector<const string>& validInputs) {
     for (int i = 0; i < min(4, static_cast<int>(validInputs.size())); ++i) cout << (i != 0 ? ", " : "") << validInputs[i];
     cout << "):" << endl;
 
-    cin >> input;
+    if (!(cin >> input)) exit(0);
 
     // in-place conversion of input to lowercase
     if(validInputs != validPieces) transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
