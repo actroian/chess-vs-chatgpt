@@ -34,7 +34,7 @@ class Game {
     bool isInGame() const;
     bool move(const std::string&, const std::string&);
     void print() const;
-    void updateState();
+    void updateState(bool setupMode);
     void reset();
     void setup();
     void endGame(int);

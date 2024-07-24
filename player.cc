@@ -14,7 +14,25 @@ void Player::setInCheck(bool inCheck) {
         cout << (isWhite ? "P1 " : "P2 ") << "is in check!" << endl;
     }
 }
+std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::pair<int, int>& start, const std::pair<int, int>& end) {
+    if (tolower(b->at(start.first, start.second)->getSymbol()) == 'k') {
+        if (start.second == end.second + 2 && isWhite == b->at(start.first, start.second - 4)->isWhitePiece()) {
+            return std::make_unique<Move>(std::make_pair(start.first, start.second - 4), std::make_pair(start.first, start.second - 1)); // left side
+        }
+        if (start.second == end.second - 2 && isWhite == b->at(start.first, start.second + 3)->isWhitePiece()) {
+            return std::make_unique<Move>(std::make_pair(start.first, start.second + 3), std::make_pair(start.first, start.second + 1)); // right side
+        }
+    }
+    return nullptr;
+}
+
 bool Player::move(unique_ptr<Board>& b, const pair<int,int>& start, const pair<int,int>& end) {
+  unique_ptr<Move> castle_move = checkCastle(b, start, end);
+  if(castle_move != nullptr) {
+    b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
+    b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
+    return true;
+  }
   bool movedToEmpty = b->at(end.first, end.second) == nullptr;
   b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
   Pawn* p = dynamic_cast<Pawn*>(b->at(end.first, end.second).get());

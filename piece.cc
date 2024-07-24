@@ -6,6 +6,7 @@ Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhit
 bool Piece::isWhitePiece(){return isWhite;};
 void Piece::moved() { unmoved = false; }
 void Piece::setPosition(int newRow, int newCol) { row = newRow; col = newCol; }
+bool Piece::isUnmoved() const { return unmoved; }
 
 Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Pawn::validMoves() const {
@@ -66,9 +67,8 @@ vector<pair<int, int>> King::validMoves() const {
     }
   }
   if (canCastle && unmoved) {
-    auto piece_ptr = b.at(row, 0).get(); // Get the raw pointer from the unique_ptr
-    Rook* rook_ptr = dynamic_cast<Rook*>(piece_ptr); // Perform the dynamic cast
-    if (rook_ptr) {
+    if (b.at(row, 0) != nullptr && col-2 >= 0){
+      if(tolower(b.at(row, 0)->getSymbol()) == 'r') {
       bool flag = true;
       for (int i = 1; i < col ; ++i) {
         if (b.at(row, i) != nullptr) {
@@ -77,11 +77,11 @@ vector<pair<int, int>> King::validMoves() const {
         }
       }
       // all spaces between are empty: castling is a valid move
-      if (flag && col-2 >= 0 && rook_ptr->isUnmoved()) moves.emplace_back(row, col-2);
-    }
-    piece_ptr = b.at(row, 7).get(); // Get the raw pointer from the unique_ptr
-    rook_ptr = dynamic_cast<Rook*>(piece_ptr); // Perform the dynamic cast
-    if (rook_ptr) {
+      if (flag && col-2 >= 0 && b.at(row, 0)->isUnmoved()) moves.emplace_back(row, col-2);
+    }}
+
+    if (b.at(row, 7) != nullptr && col + 2 <= 7) {
+      if(tolower(b.at(row, 7)->getSymbol()) == 'r') {
       bool flag = true;
       for (int i = 6; i > col ; --i) {
         if (b.at(row, i) != nullptr) {
@@ -90,7 +90,9 @@ vector<pair<int, int>> King::validMoves() const {
         }
       }
       // all spaces between are empty: castling is a valid move
-      if (flag && col+2 <= 7 && rook_ptr->isUnmoved()) moves.emplace_back(row, col+2);
+      if (flag && col+2 <= 7 &&b.at(row, 7)->isUnmoved()){
+         moves.emplace_back(row, col+2);}
+    }
     }
   }
 
@@ -156,7 +158,6 @@ vector<pair<int, int>> Rook::validMoves() const {
     return moves;
 }
 char Rook::getSymbol() const { return isWhite ? 'R' : 'r'; }
-bool Rook::isUnmoved() const { return unmoved; }
 
 Queen::Queen(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Queen::validMoves() const {

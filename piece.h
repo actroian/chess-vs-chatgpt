@@ -18,6 +18,7 @@ class Piece {
     virtual char getSymbol() const = 0;
     bool isWhitePiece();
     void moved();
+    bool isUnmoved() const;
     void setPosition(int, int);
     virtual ~Piece() {}
 };
@@ -42,12 +43,10 @@ class Bishop: public Piece {
     char getSymbol() const override;
 };
 class Rook: public Piece {
-    bool unmoved;
   public:
     Rook(int, int, Board&, bool);
     std::vector<std::pair<int, int>> validMoves() const override;
     char getSymbol() const override;
-    bool isUnmoved() const;
 };
 class Queen: public Piece {
   public:
