@@ -8,12 +8,7 @@ Player::Player(bool isWhite): isWhite{isWhite}, inCheck{false} {}
 Player::~Player() {}
 bool Player::isInCheck() const { return inCheck; }
 bool Player::isP1() { return isWhite; }
-void Player::setInCheck(bool inCheck) { 
-    this->inCheck = inCheck; 
-    if (inCheck) {
-        cout << (isWhite ? "P1 " : "P2 ") << "is in check!" << endl;
-    }
-}
+void Player::setInCheck(bool inCheck) { this->inCheck = inCheck; }
 std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::pair<int, int>& start, const std::pair<int, int>& end) {
     if (tolower(b->at(start.first, start.second)->getSymbol()) == 'k') {
         if (start.second == end.second + 2 && isWhite == b->at(start.first, start.second - 4)->isWhitePiece()) {
