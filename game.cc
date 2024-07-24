@@ -1,12 +1,5 @@
 #include "game.h"
-#include "piece.h"
-#include "globals.h"
-#include "player.h"
-#include "board.h"
-#include "L1.h"
-#include "L2.h"
-#include "L3.h"
-#include "L4.h"
+
 using namespace std;
 
 Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique<Board>()} {
@@ -14,7 +7,9 @@ Game::Game() : out{cout}, wScore{0}, bScore{0}, inGame{false}, board{make_unique
 }
 
 void Game::reset() {
-  board->resetBoard(p1, p2);
+  board->resetBoard();
+  p1->setInCheck(false);
+  p2->setInCheck(false);
 }
 bool Game::isInGame() const { return inGame; }
 void Game::print() const {
@@ -45,6 +40,8 @@ void Game::endGame(int state) {
   out << endl << "Final Score:" << endl;
   out << "White: " << wScore << endl;
   out << "Black: " << bScore << endl << endl;
+
+  reset();
 }
 
 unique_ptr<Player> Game::createPlayer(const string& input, bool isWhite) {
@@ -73,26 +70,47 @@ void Game::beginGame(const string& p1type, const string& p2type) {
 
   p1 = createPlayer(p1type, true);
   p2 = createPlayer(p2type, false);
-  if (!board->isCustom()) board->resetBoard(p1, p2);
+  if (!board->isCustom()) board->resetBoard();
 
   print();
 }
 
-void Game::updateInCheck() {
+void Game::updateState() {
+  // determine if a player is in check
   bool checkWhite = board->isP1Turn();
   bool inCheck = false;
 
   // if p1's turn is coming up, we check if p2's current possible moves include capturing the king and vice versa
   vector<Move> moves = checkWhite ? p2->possibleMoves(board) : p1->possibleMoves(board);
   for (auto& move: moves) {
-    auto loc = move.getEndPos();
-    if (towlower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
+    auto loc = move.end;
+    if (board->at(loc.first, loc.second) != nullptr && tolower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
       inCheck = true;
       break;
     } 
   }
 
   checkWhite ? p1->setInCheck(inCheck) : p2->setInCheck(inCheck);
+
+  // update that the piece has been moved
+  Move lastMove = board->getLastMove();
+  board->at(lastMove.end.first, lastMove.end.second)->moved();
+}
+
+void Game::setup() {
+  board->setup();
+
+  // after we set up the board, check if either player is in check
+  updateState();
+  board->setP1Turn(false);
+  updateState();
+  board->setP1Turn(true);
+
+  if (p1->isInCheck() || p2->isInCheck()) {
+    out << "Invalid board configuration: one or more players are in check!" << endl;
+    out << "Please setup your board again." << endl;
+    setup();
+  }
 }
 
 bool Game::move(const string& startLoc, const string& endLoc){
@@ -117,7 +135,9 @@ bool Game::move(const string& startLoc, const string& endLoc){
   if (!piecemoved) {
     return false;
   }
+
   board->setP1Turn(!board->isP1Turn());
-  updateInCheck();
+  board->setLastMove({start, end});
+  updateState();
   return true;
 }

@@ -2,10 +2,9 @@
 #define PLAYER_H
 #include <vector>
 #include <string>
-#include "board.h"
 #include "move.h"
-using namespace std;
-class Move;
+#include "board.h"
+class Piece;
 
 class Player {
   protected:
@@ -14,12 +13,12 @@ class Player {
     
   public:
     Player(bool);
-    virtual bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) = 0; 
-    vector<Move> possibleMoves(unique_ptr<Board>& board);
-    vector<pair<int, int>> outOfCheckMoves();
+    virtual bool move(std::unique_ptr<Board>& b, const std::pair<int, int>&, const std::pair<int, int>&) = 0; 
+    std::vector<Move> possibleMoves(std::unique_ptr<Board>& board);
+    std::vector<std::pair<int, int>> outOfCheckMoves();
     bool isInCheck() const;
     void setInCheck(bool);
-    void setPieces(vector<unique_ptr<Piece>&>);
+    void setPieces(std::vector<std::unique_ptr<Piece>&>);
     bool isP1();
     virtual ~Player() = 0;
 };
@@ -27,7 +26,7 @@ class Player {
 class Human: public Player {
   public:
     Human(bool);
-    bool move(unique_ptr<Board>& b, const pair<int, int>&, const pair<int, int>&) override;  
+    bool move(std::unique_ptr<Board>& b, const std::pair<int, int>&, const std::pair<int, int>&) override;  
 };
 
 #endif
