@@ -145,6 +145,6 @@ bool Game::move(const string& startLoc, const string& endLoc){
 
   board->setP1Turn(!board->isP1Turn());
   board->setLastMove({start, end});
-  updateState(false);
+  updateState();
   return true;
 }
