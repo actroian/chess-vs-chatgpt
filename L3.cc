@@ -1,8 +1,11 @@
 #include "L3.h"
+#include "apikey.h"
+#include "curl/curl.h"
+#include "nlohmann/json.hpp"
+
 #include <iostream>
-#include <curl/curl.h>
-#include <nlohmann/json.hpp>
 #include <string>
+#include <sstream>
 
 using json = nlohmann::json;
 using namespace std;
@@ -43,19 +46,40 @@ std::string callChatGPT(const std::string& prompt, const std::string& apiKey) {
     return readBuffer;
 }
 
-L3::L3(bool isWhite) : L2{isWhite} {}
+L3::L3(bool isWhite) : L2{isWhite}, attempts{0} {}
 
 Move L3::chooseMove(unique_ptr<Board>& b) {
-    string prompt = "Here is my board (my piece are " + (isWhite ? "Capital letters" : "Lowercase letters") + " ): " + b->print();
+    ostringstream s;
+    b->print(s);
+    string prompt = "Here is my board (my piece are ";
+    prompt += isWhite ? "Capital letters" : "Lowercase letters";
+    prompt += " ): ";
+    prompt += s.str();
     prompt += "\nprint out exactly 4 characters describing my best move (i.e a1a2)";
-    
-    string apiKey = "your_openai_api_key_here";
 
-    string response = callChatGPT(prompt, apiKey);
-
+    string response = callChatGPT(prompt, API_KEY);
     auto jsonResponse = json::parse(response);
 
-    return {{0, 0}, {0, 0}};
+    // Extract the text field from the response
+    string extractedText = jsonResponse["choices"][0]["text"].get<std::string>();
+    
+    string start, end;
+    if (extractedText.length() == 4) {
+        string start = extractedText.substr(0,2);
+        string end = extractedText.substr(2,2);
+        if (std::find(boardLocations.begin(), boardLocations.end(), start) == boardLocations.end() ||
+            std::find(boardLocations.begin(), boardLocations.end(), end) == boardLocations.end()) {
+            ++attempts;
+            if (attempts > 3) {
+                cout << "AI bot having issues... terminating program." << endl;
+                exit(0);
+            }
+            return chooseMove(b);
+        }
+    }
+
+    attempts = 0;
+    return Move{posToInd[start], posToInd[end]};
 }
 
 vector<Move> L3::checkmateMoves() {
