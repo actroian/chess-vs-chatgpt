@@ -10,6 +10,7 @@ class Player {
   protected:
     bool isWhite;
     bool inCheck;
+    std::unique_ptr<Move> checkCastle(std::unique_ptr<Board>& b, const std::pair<int,int>& start, const std::pair<int,int>& end);
     
   public:
     Player(bool);

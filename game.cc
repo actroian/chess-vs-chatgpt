@@ -75,7 +75,7 @@ void Game::beginGame(const string& p1type, const string& p2type) {
   print();
 }
 
-void Game::updateState() {
+void Game::updateState(bool setupMode) {
   // determine if a player is in check
   bool checkWhite = board->isP1Turn();
   bool inCheck = false;
@@ -93,17 +93,22 @@ void Game::updateState() {
   checkWhite ? p1->setInCheck(inCheck) : p2->setInCheck(inCheck);
 
   // update that the piece has been moved
-  Move lastMove = board->getLastMove();
-  board->at(lastMove.end.first, lastMove.end.second)->moved();
+  if(!setupMode){
+    Move lastMove = board->getLastMove();
+    board->at(lastMove.end.first, lastMove.end.second)->moved();
+  }
 }
 
 void Game::setup() {
+
+  p1 = createPlayer(HUMAN, true);
+  p2 = createPlayer(HUMAN, false);
   board->setup();
 
   // after we set up the board, check if either player is in check
-  updateState();
+  updateState(true);
   board->setP1Turn(false);
-  updateState();
+  updateState(true);
   board->setP1Turn(true);
 
   if (p1->isInCheck() || p2->isInCheck()) {
@@ -111,6 +116,8 @@ void Game::setup() {
     out << "Please setup your board again." << endl;
     setup();
   }
+  p1 = nullptr;
+  p2 = nullptr;
 }
 
 bool Game::move(const string& startLoc, const string& endLoc){

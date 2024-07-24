@@ -1,0 +1,29 @@
+setup
++ K e1
++ R a1
++ k e8
++ r a8
++ P a2
++ P b2
++ P c2
++ P d2
++ P e2
++ P f2
++ P g2
++ P h2
++ p a7
++ p b7
++ p c7
++ p d7
++ p e7
++ p f7
++ p g7
++ p h7
+= white
+done
+game
+human
+human
+move e1 c1
+move e8 c8
+q
