@@ -120,23 +120,13 @@ void Game::setup() {
   p2 = nullptr;
 }
 
-bool Game::move(const string& startLoc, const string& endLoc){
-  pair<int, int> start = posToInd[startLoc];
-  pair<int, int> end = posToInd[endLoc];
-
-  if(board->at(start.first, start.second) == nullptr){
-    cout << "Invalid move: no piece at position, try again."<< endl;
-    return false;
-  }
-
+bool Game::move(){
   bool piecemoved;
   if(board->isP1Turn()){
-    cout<<"p1 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    piecemoved = p1->move(board, start, end);
+    piecemoved = p1->move(board);
   }
   else{
-    cout<<"p2 moving from " << start.first<< ',' <<start.second << " to "<< end.first << ','<< end.second<<endl;
-    piecemoved = p2->move(board, start, end);
+    piecemoved = p2->move(board);
   }
 
   if (!piecemoved) {
@@ -144,7 +134,6 @@ bool Game::move(const string& startLoc, const string& endLoc){
   }
 
   board->setP1Turn(!board->isP1Turn());
-  board->setLastMove({start, end});
   updateState();
   return true;
 }

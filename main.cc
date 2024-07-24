@@ -29,11 +29,8 @@ int main() {
       else cout << "Cannot end game that is not in progress." << endl;
     }
     else if (cmd == "move") {
-      arg1 = getInput("location of piece you want to move", boardLocations);
-      arg2 = getInput("location you want to move the piece to", boardLocations);
-      
       // invalid move prompts for a new command
-      if (!game.move(arg1, arg2)) continue;
+      if (!game.move()) continue;
 
       game.print();
     }
