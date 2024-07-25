@@ -92,7 +92,7 @@ void Game::updateState(bool setupMode) {
 
   // update that the piece has been moved
   if(!setupMode){
-    Move lastMove = board->getLastMove();
+    Move lastMove = board->prevMoves.top();
     board->at(lastMove.end.first, lastMove.end.second)->moved();
   }
 }

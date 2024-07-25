@@ -11,11 +11,11 @@ bool Piece::isUnmoved() const { return unmoved; }
 Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Pawn::validMoves() const {
   vector<pair<int, int>> moves;
-  Move lastMove = b.getLastMove();
+  Move lastMove = b.prevMoves.empty() ? Move{{-1,-1},{-1,-1}} : b.prevMoves.top();
 
   // check if last move was by a pawn and it moved two squares
   bool pawnDoubleMovedLast =
-    lastMove != NO_LAST_MOVE &&
+    !b.prevMoves.empty() &&
     tolower(
       b.at(lastMove.end.first, lastMove.end.second)
       ->getSymbol()
@@ -25,7 +25,7 @@ vector<pair<int, int>> Pawn::validMoves() const {
 
   if (isWhite) {
     if (row-1 >= 0 && b.at(row-1, col) == nullptr) moves.emplace_back(row-1, col);
-    if (unmoved && row-1 >= 0 && b.at(row-1, col) == nullptr && row-2 >= 0 && b.at(row-2, col) == nullptr) moves.emplace_back(row-2, col);
+    if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) moves.emplace_back(row-2, col);
     if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) moves.emplace_back(row-1, col-1);
     if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) moves.emplace_back(row-1, col+1);
     
@@ -38,7 +38,7 @@ vector<pair<int, int>> Pawn::validMoves() const {
   }
   else {
     if (row+1 <= 7 && b.at(row+1, col) == nullptr) moves.emplace_back(row+1, col);
-    if (unmoved && row+1 <= 7 && b.at(row+1, col) == nullptr && row+2 <= 7 && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
+    if (unmoved && row+2 <= 7 && b.at(row+1, col) == nullptr && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
     if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
     if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
     
@@ -61,7 +61,7 @@ vector<pair<int, int>> King::validMoves() const {
     int newRow = row+r;
     for (int c = -1; c <= 1; ++c) {
       int newCol = col+c;
-      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7) {
+      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.moveable(isWhite, {newRow, newCol})) {
         moves.emplace_back(newRow, newCol);
       }
     }
@@ -107,25 +107,37 @@ vector<pair<int, int>> Bishop::validMoves() const {
   vector<pair<int, int>> moves;
 
   // while loops that go diagonally in each direction on the Game until its out of bounds
-  int r = row, c = col;
-  while (++r <= 7 && ++c <= 7) {
-    moves.emplace_back(r, c);
+  int r = row+1, c = col+1;
+  while (r <= 7 && c <= 7) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    ++r; ++c;
   }
-  r = row; c = col;
-  while (--r >= 0 && --c >= 0) {
-    moves.emplace_back(r, c);
+  r = row-1; c = col-1;
+  while (r >= 0 && c >= 0) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    --r; --c;
   }
-  r = row; c = col;
-  while (++r <= 7 && --c >= 0) {
-    moves.emplace_back(r, c);
+  r = row+1; c = col-1;
+  while (r <= 7 && c >= 0) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    ++r; --c;
   }
-  r = row; c = col;
-  while (--r >= 7 && ++c <= 7) {
-    moves.emplace_back(r, c);
+  r = row-1; c = col+1;
+  while (r >= 0 && c <= 7) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    --r; ++c;
   }
 
   return moves;
@@ -138,21 +150,29 @@ vector<pair<int, int>> Rook::validMoves() const {
 
     // add all valid horizontal moves
     for (int c = col + 1; c <= 7; c++) {
+      if (b.moveable(isWhite, {row, c})) {
         moves.emplace_back(row, c);
-        if (b.at(row, c) != nullptr) break;
+      }
+      if (b.at(row, c) != nullptr) break;
     }
     for (int c = col - 1; c >= 0; c--) {
+      if (b.moveable(isWhite, {row, c})) {
         moves.emplace_back(row, c);
-        if (b.at(row, c) != nullptr) break;
+      }
+      if (b.at(row, c) != nullptr) break;
     }
     // add all valid vertical moves
     for (int r = row + 1; r <= 7; r++) {
+      if (b.moveable(isWhite, {r, col})) {
         moves.emplace_back(r, col);
-        if (b.at(r, col) != nullptr) break;
+      }
+      if (b.at(r, col) != nullptr) break;
     }
     for (int r = row - 1; r >= 0; r--) {
+      if (b.moveable(isWhite, {r, col})) {
         moves.emplace_back(r, col);
-        if (b.at(r, col) != nullptr) break;
+      }
+      if (b.at(r, col) != nullptr) break;
     }
 
     return moves;
@@ -170,9 +190,9 @@ vector<pair<int, int>> Queen::validMoves() const {
   vector<pair<int, int>> bishopMoves = bish.validMoves();
   
   // merge all possible moves into one vector
-  vector<pair<int, int>> mergedMoves(rookMoves.size() + bishopMoves.size());
-  mergedMoves.insert(mergedMoves.end(), rookMoves.begin(), rookMoves.end());
-  mergedMoves.insert(mergedMoves.end(), bishopMoves.begin(), bishopMoves.end());
+  vector<pair<int, int>> mergedMoves;
+  for (const auto& move: rookMoves) mergedMoves.push_back(move);
+  for (const auto& move: bishopMoves) mergedMoves.push_back(move);
   
   return mergedMoves;
 }
@@ -182,14 +202,14 @@ Knight::Knight(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Knight::validMoves() const {
   vector<pair<int, int>> moves;
 
-  if (row+1 <= 7 && col+2 <= 7) moves.emplace_back(row+1, col+2);
-  if (row+2 <= 7 && col+1 <= 7) moves.emplace_back(row+2, col+1);
-  if (row+1 <= 7 && col-2 >= 0) moves.emplace_back(row+1, col-2);
-  if (row+2 <= 7 && col-1 >= 0) moves.emplace_back(row+2, col-1);
-  if (row-1 >= 0 && col+2 <= 7) moves.emplace_back(row-1, col+2);
-  if (row-2 >= 0 && col+1 <= 7) moves.emplace_back(row-2, col+1);
-  if (row-1 >= 0 && col-2 >= 0) moves.emplace_back(row-1, col-2);
-  if (row-2 >= 0 && col-1 >= 0) moves.emplace_back(row-2, col-1);
+  if (row+1 <= 7 && col+2 <= 7 && b.moveable(isWhite, {row+1, col+2})) moves.emplace_back(row+1, col+2);
+  if (row+2 <= 7 && col+1 <= 7 && b.moveable(isWhite, {row+2, col+1})) moves.emplace_back(row+2, col+1);
+  if (row+1 <= 7 && col-2 >= 0 && b.moveable(isWhite, {row+1, col-2})) moves.emplace_back(row+1, col-2);
+  if (row+2 <= 7 && col-1 >= 0 && b.moveable(isWhite, {row+2, col-1})) moves.emplace_back(row+2, col-1);
+  if (row-1 >= 0 && col+2 <= 7 && b.moveable(isWhite, {row-1, col+2})) moves.emplace_back(row-1, col+2);
+  if (row-2 >= 0 && col+1 <= 7 && b.moveable(isWhite, {row-2, col+1})) moves.emplace_back(row-2, col+1);
+  if (row-1 >= 0 && col-2 >= 0 && b.moveable(isWhite, {row-1, col-2})) moves.emplace_back(row-1, col-2);
+  if (row-2 >= 0 && col-1 >= 0 && b.moveable(isWhite, {row-2, col-1})) moves.emplace_back(row-2, col-1);
 
   return moves;
 }

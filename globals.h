@@ -14,7 +14,6 @@ extern std::map<const std::string, std::pair<int,int>> posToInd;
 extern std::vector<const std::string> validPlayers;
 extern std::vector<const std::string> validSetupCommands;
 extern std::vector<const std::string> validPromotions;
-extern const Move NO_LAST_MOVE;
 
 void initializePosToInd();
 std::string getInput(const std::string&, std::vector<const std::string>&);
