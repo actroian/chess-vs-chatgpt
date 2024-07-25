@@ -2,7 +2,7 @@
 #include "globals.h"
 using namespace std;
 
-Board::Board() : p1Turn{true}, custom{false}, lastMove{{-1,-1}, {-1,-1}} {
+Board::Board() : p1Turn{true}, custom{false} {
     // initialize empty board
   for (int i = 0; i <= 7; ++i) {
     vector<unique_ptr<Piece>> row(8);
@@ -196,5 +196,19 @@ void Board::setup() {
   if (!validateBoard()) setup();
 }
 
-Move Board::getLastMove() const { return lastMove.getMove(); }
-void Board::setLastMove(const Move& m) { lastMove = m; }
+void Board::undo() {
+  if (prevMoves.empty()) {
+    // shouldn't reach this
+    cout << "Can't undo when no moves have been made" << endl;
+    return;
+  }
+
+  Move lastMove = prevMoves.top();
+  prevMoves.pop();
+
+  string piece;
+  piece += lastMove.captured_piece;
+
+  placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
+  placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
+}

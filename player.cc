@@ -28,6 +28,11 @@ bool Player::move(unique_ptr<Board>& b) {
     auto end = move.end;
 
     if (std::find(allmoves.begin(), allmoves.end(), move) != allmoves.end()) {
+        // check if the move is a capturing move
+        if (b->at(end.first, end.second) != nullptr) {
+            move.captured_piece = b->at(end.first, end.second)->getSymbol();
+        }
+
         unique_ptr<Move> castle_move = checkCastle(b, start, end);
         if(castle_move != nullptr) {
           b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
@@ -52,7 +57,7 @@ bool Player::move(unique_ptr<Board>& b) {
             cout << "Pawn promoted to " << promotion << endl;
           }
         }
-        b->setLastMove(move);
+        b->prevMoves.push(move);
         return true;
     } else {
         // not valid
@@ -70,13 +75,11 @@ vector<Move> Player::possibleMoves(unique_ptr<Board>& board) {
       if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
         vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
         for (auto& validmove: validMoves) {
-          if (board->moveable(isWhite, validmove)) {
-            Move move = Move({row, col}, {validmove.first, validmove.second});
-            if (inCheck) {
-              // TODO: if this player is currently in check, only add to moves if the move gets them out of check
-            }
-            moves.push_back(move);
+          Move move = Move({row, col}, {validmove.first, validmove.second});
+          if (inCheck) {
+            // TODO: if this player is currently in check, only add to moves if the move gets them out of check
           }
+          moves.push_back(move);
         }
       }
     }
