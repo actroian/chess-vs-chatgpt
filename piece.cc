@@ -107,25 +107,37 @@ vector<pair<int, int>> Bishop::validMoves() const {
   vector<pair<int, int>> moves;
 
   // while loops that go diagonally in each direction on the Game until its out of bounds
-  int r = row, c = col;
-  while (++r <= 7 && ++c <= 7) {
-    moves.emplace_back(r, c);
+  int r = row+1, c = col+1;
+  while (r <= 7 && c <= 7) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    ++r; ++c;
   }
-  r = row; c = col;
-  while (--r >= 0 && --c >= 0) {
-    moves.emplace_back(r, c);
+  r = row-1; c = col-1;
+  while (r >= 0 && c >= 0) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    --r; --c;
   }
-  r = row; c = col;
-  while (++r <= 7 && --c >= 0) {
-    moves.emplace_back(r, c);
+  r = row+1; c = col-1;
+  while (r <= 7 && c >= 0) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    ++r; --c;
   }
-  r = row; c = col;
-  while (--r >= 7 && ++c <= 7) {
-    moves.emplace_back(r, c);
+  r = row-1; c = col+1;
+  while (r >= 0 && c <= 7) {
+    if (b.moveable(isWhite, {r, c})) {
+      moves.emplace_back(r, c);
+    }
     if (b.at(r,c) != nullptr) break;
+    --r; ++c;
   }
 
   return moves;
@@ -138,21 +150,29 @@ vector<pair<int, int>> Rook::validMoves() const {
 
     // add all valid horizontal moves
     for (int c = col + 1; c <= 7; c++) {
+      if (b.moveable(isWhite, {row, c})) {
         moves.emplace_back(row, c);
-        if (b.at(row, c) != nullptr) break;
+      }
+      if (b.at(row, c) != nullptr) break;
     }
     for (int c = col - 1; c >= 0; c--) {
+      if (b.moveable(isWhite, {row, c})) {
         moves.emplace_back(row, c);
-        if (b.at(row, c) != nullptr) break;
+      }
+      if (b.at(row, c) != nullptr) break;
     }
     // add all valid vertical moves
     for (int r = row + 1; r <= 7; r++) {
+      if (b.moveable(isWhite, {r, col})) {
         moves.emplace_back(r, col);
-        if (b.at(r, col) != nullptr) break;
+      }
+      if (b.at(r, col) != nullptr) break;
     }
     for (int r = row - 1; r >= 0; r--) {
+      if (b.moveable(isWhite, {r, col})) {
         moves.emplace_back(r, col);
-        if (b.at(r, col) != nullptr) break;
+      }
+      if (b.at(r, col) != nullptr) break;
     }
 
     return moves;
@@ -170,9 +190,9 @@ vector<pair<int, int>> Queen::validMoves() const {
   vector<pair<int, int>> bishopMoves = bish.validMoves();
   
   // merge all possible moves into one vector
-  vector<pair<int, int>> mergedMoves(rookMoves.size() + bishopMoves.size());
-  mergedMoves.insert(mergedMoves.end(), rookMoves.begin(), rookMoves.end());
-  mergedMoves.insert(mergedMoves.end(), bishopMoves.begin(), bishopMoves.end());
+  vector<pair<int, int>> mergedMoves;
+  for (const auto& move: rookMoves) mergedMoves.push_back(move);
+  for (const auto& move: bishopMoves) mergedMoves.push_back(move);
   
   return mergedMoves;
 }
