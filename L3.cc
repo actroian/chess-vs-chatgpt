@@ -71,6 +71,12 @@ Move L3::chooseMove(unique_ptr<Board>& b) {
     prompt += isWhite ? "White (capital letters)" : "Black (lowercase letters)";
     prompt += ".\nOnly provide moves for ";
     prompt += isWhite ? "White pieces (capital letters)" : "Black pieces (lowercase letters)";
+    prompt += "\nChoose the best move from the following moves: {";
+    auto moves = possibleMoves(b);
+    for (const auto& m : moves) {
+        prompt += indToPos[m.start] + indToPos[m.end] + ",";
+    }
+    prompt += "}";
     prompt += ".\nYour move should be exactly 4 characters, describing the best move in the format 'a1a2'. For example, if you are moving a White piece, provide a move like 'E2E4', and if you are moving a Black piece, provide a move like 'e7e5'.";
     prompt += "\nPlease ensure you only move the correct pieces based on your color.";
     prompt += "\np = pawn, k = king, q = queen, b = bishop, n = knight, r = rook";

@@ -3,7 +3,7 @@
 #include "player.h"
 using namespace std;
 
-vector<const string> validPlayers = {"human", "computer"/*,"L1", "L2", "L3", "L4"*/};
+vector<const string> validPlayers = {"human", "computer1","computer2", "computer3"};
 vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
 vector<const string> validPromotions = {"r", "k", "b", "q"};
 vector<const string> validSetupCommands = {"+", "-", "=", "done"};
@@ -19,6 +19,8 @@ vector<const string> boardLocations = {
   "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", 
 };
 map<const string, pair<int,int>> posToInd;
+map<const pair<int,int>, string> indToPos;
+
 const Move NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
 void initializePosToInd() {
@@ -29,9 +31,15 @@ void initializePosToInd() {
         posToInd[pos] = {row, col};
     }
 }
+void initializeIndToPos() {
+    for (const auto& entry : posToInd) {
+        indToPos[entry.second] = entry.first;
+    }
+}
 struct PosToIndInitializer {
     PosToIndInitializer() {
         initializePosToInd();
+        initializeIndToPos();
     }
 };
 PosToIndInitializer posToIndInitializer;
