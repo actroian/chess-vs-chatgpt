@@ -11,11 +11,11 @@ bool Piece::isUnmoved() const { return unmoved; }
 Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Pawn::validMoves() const {
   vector<pair<int, int>> moves;
-  Move lastMove = b.getLastMove();
+  Move lastMove = b.prevMoves.empty() ? Move{{-1,-1},{-1,-1}} : b.prevMoves.top();
 
   // check if last move was by a pawn and it moved two squares
   bool pawnDoubleMovedLast =
-    lastMove != NO_LAST_MOVE &&
+    !b.prevMoves.empty() &&
     tolower(
       b.at(lastMove.end.first, lastMove.end.second)
       ->getSymbol()

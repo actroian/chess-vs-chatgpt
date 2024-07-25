@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <stack>
 
 #include "globals.h"
 #include "move.h"
@@ -13,10 +14,12 @@ class Player;
 class Board{
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     bool p1Turn, custom;
-    Move lastMove;
     
     bool validateBoard();
+    void undo();
   public:
+    std::stack<Move> prevMoves;
+
     Board();
     void setup();
     void resetBoard();
@@ -29,8 +32,6 @@ class Board{
     bool isCustom() const;
     bool moveable(bool, const std::pair<int,int>&) const;
     void setP1Turn(bool);
-    void setLastMove(const Move&);
-    Move getLastMove() const;
     void clearBoard();
 };
 

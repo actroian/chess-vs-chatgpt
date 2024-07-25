@@ -28,6 +28,11 @@ bool Player::move(unique_ptr<Board>& b) {
     auto end = move.end;
 
     if (std::find(allmoves.begin(), allmoves.end(), move) != allmoves.end()) {
+        // check if the move is a capturing move
+        if (b->at(end.first, end.second) != nullptr) {
+            move.captured_piece = b->at(end.first, end.second)->getSymbol();
+        }
+
         unique_ptr<Move> castle_move = checkCastle(b, start, end);
         if(castle_move != nullptr) {
           b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
@@ -52,7 +57,7 @@ bool Player::move(unique_ptr<Board>& b) {
             cout << "Pawn promoted to " << promotion << endl;
           }
         }
-        b->setLastMove(move);
+        b->prevMoves.push(move);
         return true;
     } else {
         // not valid

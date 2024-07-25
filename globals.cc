@@ -19,7 +19,6 @@ vector<const string> boardLocations = {
   "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", 
 };
 map<const string, pair<int,int>> posToInd;
-const Move NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
 void initializePosToInd() {
     for (int i = 0; i < boardLocations.size(); ++i) {
