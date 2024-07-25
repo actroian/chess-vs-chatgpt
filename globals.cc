@@ -19,6 +19,9 @@ vector<const string> boardLocations = {
   "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", 
 };
 map<const string, pair<int,int>> posToInd;
+map<const pair<int,int>, string> indToPos;
+
+const Move NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
 void initializePosToInd() {
     for (int i = 0; i < boardLocations.size(); ++i) {
@@ -28,9 +31,15 @@ void initializePosToInd() {
         posToInd[pos] = {row, col};
     }
 }
+void initializeIndToPos() {
+    for (const auto& entry : posToInd) {
+        indToPos[entry.second] = entry.first;
+    }
+}
 struct PosToIndInitializer {
     PosToIndInitializer() {
         initializePosToInd();
+        initializeIndToPos();
     }
 };
 PosToIndInitializer posToIndInitializer;

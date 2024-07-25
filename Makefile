@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall -g
+CXXFLAGS = -std=c++14 -I./nlohmann-json/include -Wall -g
 
 EXEC = chess
 
@@ -10,7 +10,7 @@ OBJDIR = obj
 OBJECTS = $(patsubst %.cc, $(OBJDIR)/%.o, $(CCFILES))
 
 $(EXEC): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $(EXEC)
+	$(CXX) $(OBJECTS) -o $(EXEC) -lcurl
 
 # Rule to compile source files into object files
 $(OBJDIR)/%.o: %.cc | $(OBJDIR)

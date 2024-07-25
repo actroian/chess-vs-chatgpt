@@ -1,3 +1,6 @@
+# personal info
+apikey.h
+
 # files generated during compilation
 chess
 *.o
@@ -7,3 +10,5 @@ chess
 group.txt
 testoutputs/
 obj/
+curl/
+nlohmann-json/
