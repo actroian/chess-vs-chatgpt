@@ -75,13 +75,11 @@ vector<Move> Player::possibleMoves(unique_ptr<Board>& board) {
       if(board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
         vector<pair<int, int>> validMoves = board->at(row, col)->validMoves();
         for (auto& validmove: validMoves) {
-          if (board->moveable(isWhite, validmove)) {
-            Move move = Move({row, col}, {validmove.first, validmove.second});
-            if (inCheck) {
-              // TODO: if this player is currently in check, only add to moves if the move gets them out of check
-            }
-            moves.push_back(move);
+          Move move = Move({row, col}, {validmove.first, validmove.second});
+          if (inCheck) {
+            // TODO: if this player is currently in check, only add to moves if the move gets them out of check
           }
+          moves.push_back(move);
         }
       }
     }

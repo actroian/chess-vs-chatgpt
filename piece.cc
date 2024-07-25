@@ -25,7 +25,7 @@ vector<pair<int, int>> Pawn::validMoves() const {
 
   if (isWhite) {
     if (row-1 >= 0 && b.at(row-1, col) == nullptr) moves.emplace_back(row-1, col);
-    if (unmoved && row-1 >= 0 && b.at(row-1, col) == nullptr && row-2 >= 0 && b.at(row-2, col) == nullptr) moves.emplace_back(row-2, col);
+    if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) moves.emplace_back(row-2, col);
     if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) moves.emplace_back(row-1, col-1);
     if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) moves.emplace_back(row-1, col+1);
     
@@ -38,7 +38,7 @@ vector<pair<int, int>> Pawn::validMoves() const {
   }
   else {
     if (row+1 <= 7 && b.at(row+1, col) == nullptr) moves.emplace_back(row+1, col);
-    if (unmoved && row+1 <= 7 && b.at(row+1, col) == nullptr && row+2 <= 7 && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
+    if (unmoved && row+2 <= 7 && b.at(row+1, col) == nullptr && b.at(row+2, col) == nullptr) moves.emplace_back(row+2, col);
     if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) moves.emplace_back(row+1, col-1);
     if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) moves.emplace_back(row+1, col+1);
     
@@ -61,7 +61,7 @@ vector<pair<int, int>> King::validMoves() const {
     int newRow = row+r;
     for (int c = -1; c <= 1; ++c) {
       int newCol = col+c;
-      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7) {
+      if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.moveable(isWhite, {newRow, newCol})) {
         moves.emplace_back(newRow, newCol);
       }
     }
@@ -202,14 +202,14 @@ Knight::Knight(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 vector<pair<int, int>> Knight::validMoves() const {
   vector<pair<int, int>> moves;
 
-  if (row+1 <= 7 && col+2 <= 7) moves.emplace_back(row+1, col+2);
-  if (row+2 <= 7 && col+1 <= 7) moves.emplace_back(row+2, col+1);
-  if (row+1 <= 7 && col-2 >= 0) moves.emplace_back(row+1, col-2);
-  if (row+2 <= 7 && col-1 >= 0) moves.emplace_back(row+2, col-1);
-  if (row-1 >= 0 && col+2 <= 7) moves.emplace_back(row-1, col+2);
-  if (row-2 >= 0 && col+1 <= 7) moves.emplace_back(row-2, col+1);
-  if (row-1 >= 0 && col-2 >= 0) moves.emplace_back(row-1, col-2);
-  if (row-2 >= 0 && col-1 >= 0) moves.emplace_back(row-2, col-1);
+  if (row+1 <= 7 && col+2 <= 7 && b.moveable(isWhite, {row+1, col+2})) moves.emplace_back(row+1, col+2);
+  if (row+2 <= 7 && col+1 <= 7 && b.moveable(isWhite, {row+2, col+1})) moves.emplace_back(row+2, col+1);
+  if (row+1 <= 7 && col-2 >= 0 && b.moveable(isWhite, {row+1, col-2})) moves.emplace_back(row+1, col-2);
+  if (row+2 <= 7 && col-1 >= 0 && b.moveable(isWhite, {row+2, col-1})) moves.emplace_back(row+2, col-1);
+  if (row-1 >= 0 && col+2 <= 7 && b.moveable(isWhite, {row-1, col+2})) moves.emplace_back(row-1, col+2);
+  if (row-2 >= 0 && col+1 <= 7 && b.moveable(isWhite, {row-2, col+1})) moves.emplace_back(row-2, col+1);
+  if (row-1 >= 0 && col-2 >= 0 && b.moveable(isWhite, {row-1, col-2})) moves.emplace_back(row-1, col-2);
+  if (row-2 >= 0 && col-1 >= 0 && b.moveable(isWhite, {row-2, col-1})) moves.emplace_back(row-2, col-1);
 
   return moves;
 }
