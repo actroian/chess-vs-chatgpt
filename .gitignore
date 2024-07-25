@@ -10,3 +10,5 @@ chess
 group.txt
 testoutputs/
 obj/
+curl/
+nlohmann-json/
