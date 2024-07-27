@@ -52,7 +52,13 @@ void Board::print(std::ostream& out) const {
         }
       }
       else {
-        out << cell->getSymbol();
+        char symbol = cell->getSymbol();
+        if (tolower(symbol) == 'p') out << (cell->isWhitePiece() ? "♟︎":"♙");
+        else if (tolower(symbol) == 'b') out << (cell->isWhitePiece() ? "♝":"♗");
+        else if (tolower(symbol) == 'k') out << (cell->isWhitePiece() ? "♚":"♔");
+        else if (tolower(symbol) == 'q') out << (cell->isWhitePiece() ? "♛":"♕");
+        else if (tolower(symbol) == 'r') out << (cell->isWhitePiece() ? "♜":"♖");
+        else if (tolower(symbol) == 'n') out << (cell->isWhitePiece() ? "♞":"♘");
       }
     }
     out << endl;
@@ -207,10 +213,13 @@ void Board::undo() {
   prevMoves.pop();
   placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
   removePiece(lastMove.end.first, lastMove.end.second);
+<<<<<<< HEAD
   if(lastMove.isCastleMove){
     placePiece(lastMove.rookstart.first, lastMove.rookstart.second, std::move(at(lastMove.rookend.first, lastMove.rookend.second)));
     removePiece(lastMove.rookend.first, lastMove.rookend.second);
   }
+=======
+>>>>>>> e32af829f97fdd261d215820133c2c890f65a38b
   if(lastMove.captured_piece){
     string piece = string{lastMove.captured_piece};
     placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
