@@ -21,7 +21,73 @@ std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::
     return nullptr;
 }
 
-bool Player::move(unique_ptr<Board>& b) {
+bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p2 ) const {
+  vector<Move> moves = p2->possibleMoves(b);
+  int kingRow = 0;
+  int kingCol = 0;
+
+  for(int row = 0; row <= 7; row++) {
+    for(int col = 0; col <= 7; col++) {
+      if(b->at(row, col) != nullptr) {
+        if(b->at(row, col)->isWhitePiece() == isWhite && tolower(b->at(row, col)->getSymbol()) == 'k'){
+          kingRow = row;
+          kingCol = col;
+        }
+      } 
+    }
+  }
+
+  for(auto move : moves){
+    if(move.end.first == kingRow && move.end.second == kingCol) {
+      return true;
+    } 
+  }
+  return false;
+} 
+
+bool Player::castle(std::unique_ptr<Board>& b, std::unique_ptr<Player>& p2, Move move, std::unique_ptr<Move>& castle_move) {
+    auto start = move.start;
+    auto end = move.end;
+    
+    if (start.second <= end.second) {
+        for (int i = start.second; i < end.second - 1; ++i) {
+            b->placePiece(start.first, i + 1, std::move(b->at(start.first, i)));
+            b->removePiece(start.first, i);
+            if (kingInCheck(b, p2)) {
+                b->placePiece(start.first, i, std::move(b->at(start.first, i + 1)));
+                b->removePiece(start.first, i + 1);
+                cout<<"Invalid move: Must move out of check"<< endl;
+                b->print(cout);
+                return false;
+            }
+        }
+        b->placePiece(end.first, end.second, std::move(b->at(start.first, end.second - 1)));
+        b->removePiece(start.first, end.second - 1);
+    } else {
+        for (int i = start.second; i > end.second + 1; --i) {
+            b->placePiece(start.first, i - 1, std::move(b->at(start.first, i)));
+            b->removePiece(start.first, i);
+            if (kingInCheck(b, p2)) {
+                b->placePiece(start.first, i, std::move(b->at(start.first, i - 1)));
+                b->removePiece(start.first, i - 1);
+                cout<<"Invalid move: Must move out of check"<< endl;
+                b->print(cout);
+                return false;
+            }
+        }
+        b->placePiece(end.first, end.second, std::move(b->at(start.first, end.second + 1)));
+        b->removePiece(start.first, end.second + 1);
+    }
+
+    b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
+    b->removePiece(castle_move->start.first, castle_move->start.second);
+    b->prevMoves.push(move);
+    b->prevMoves.push(*castle_move);
+
+    return true;
+}
+
+bool Player::move(unique_ptr<Board>& b, unique_ptr<Player>& p2) {
     vector<Move> allmoves = possibleMoves(b);
     Move move = chooseMove(b);
     auto start = move.start;
@@ -33,32 +99,30 @@ bool Player::move(unique_ptr<Board>& b) {
             move.captured_piece = b->at(end.first, end.second)->getSymbol();
         }
 
-        unique_ptr<Move> castle_move = checkCastle(b, start, end);
-        if(castle_move != nullptr) {
-          b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
-          b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
-          return true;
+      unique_ptr<Move> castle_move = checkCastle(b, start, end);
+      if(castle_move != nullptr) {
+          return castle(b, p2, move, castle_move);
+      }
+      bool movedToEmpty = b->at(end.first, end.second) == nullptr;
+      b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
+      Pawn* p = dynamic_cast<Pawn*>(b->at(end.first, end.second).get());
+      // check if a pawn moved
+      if (p) {
+        // check for en passant - if so, remove pawn that got jumped
+        if (movedToEmpty && start.first != end.first) {
+            b->removePiece(start.first, end.second);
         }
-        bool movedToEmpty = b->at(end.first, end.second) == nullptr;
-        b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
-        Pawn* p = dynamic_cast<Pawn*>(b->at(end.first, end.second).get());
-        // check if a pawn moved
-        if (p) {
-          // check for en passant - if so, remove pawn that got jumped
-          if (movedToEmpty && start.first != end.first) {
-              b->removePiece(start.first, end.second);
-          }
 
-          // check for pawn promotion
-          if ((end.first == 0 && isP1()) || (end.first == 7 && !isP1())) {
-            string promotion = getInput("pawn promotion", validPromotions);
-            promotion = isP1() ? toupper(promotion[0]) : tolower(promotion[0]);
-            b->placePiece(end.first, end.second, b->createPiece(promotion, end));
-            cout << "Pawn promoted to " << promotion << endl;
-          }
+        // check for pawn promotion
+        if ((end.first == 0 && isP1()) || (end.first == 7 && !isP1())) {
+          string promotion = getInput("pawn promotion", validPromotions);
+          promotion = isP1() ? toupper(promotion[0]) : tolower(promotion[0]);
+          b->placePiece(end.first, end.second, b->createPiece(promotion, end));
+          cout << "Pawn promoted to " << promotion << endl;
         }
-        b->prevMoves.push(move);
-        return true;
+      }
+      b->prevMoves.push(move);
+      return true;
     } else {
         // not valid
         cout << "Invalid move, please enter a new command!" << endl;

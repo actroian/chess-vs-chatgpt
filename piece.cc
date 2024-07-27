@@ -68,7 +68,7 @@ vector<pair<int, int>> King::validMoves() const {
   }
   if (canCastle && unmoved) {
     if (b.at(row, 0) != nullptr && col-2 >= 0){
-      if(tolower(b.at(row, 0)->getSymbol()) == 'r') {
+      if(tolower(b.at(row, 0)->getSymbol()) == 'r' && b.at(row, 0)->isUnmoved()) {
       bool flag = true;
       for (int i = 1; i < col ; ++i) {
         if (b.at(row, i) != nullptr) {
@@ -81,7 +81,7 @@ vector<pair<int, int>> King::validMoves() const {
     }}
 
     if (b.at(row, 7) != nullptr && col + 2 <= 7) {
-      if(tolower(b.at(row, 7)->getSymbol()) == 'r') {
+      if(tolower(b.at(row, 7)->getSymbol()) == 'r' && b.at(row, 7)->isUnmoved()) {
       bool flag = true;
       for (int i = 6; i > col ; --i) {
         if (b.at(row, i) != nullptr) {
