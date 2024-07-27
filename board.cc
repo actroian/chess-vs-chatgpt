@@ -52,7 +52,13 @@ void Board::print(std::ostream& out) const {
         }
       }
       else {
-        out << cell->getSymbol();
+        char symbol = cell->getSymbol();
+        if (tolower(symbol) == 'p') out << (cell->isWhitePiece() ? "♟︎":"♙");
+        else if (tolower(symbol) == 'b') out << (cell->isWhitePiece() ? "♝":"♗");
+        else if (tolower(symbol) == 'k') out << (cell->isWhitePiece() ? "♚":"♔");
+        else if (tolower(symbol) == 'q') out << (cell->isWhitePiece() ? "♛":"♕");
+        else if (tolower(symbol) == 'r') out << (cell->isWhitePiece() ? "♜":"♖");
+        else if (tolower(symbol) == 'n') out << (cell->isWhitePiece() ? "♞":"♘");
       }
     }
     out << endl;
