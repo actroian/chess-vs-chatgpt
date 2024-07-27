@@ -21,6 +21,31 @@ std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::
     return nullptr;
 }
 
+bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p2 ) const {
+  vector<Move> moves = p2->possibleMoves(b);
+  int kingRow = 0;
+  int kingCol = 0;
+
+  for(int row = 0; row <= 7; row++) {
+    for(int col = 0; col <= 7; col++) {
+      if(b->at(row, col) != nullptr) {
+        if(b->at(row, col)->isWhitePiece() == isWhite && tolower(b->at(row, col)->getSymbol()) == 'k'){
+          kingRow = row;
+          kingCol = col;
+        }
+      } 
+    }
+  }
+
+  for(auto move : moves){
+    if(move.end.first == kingRow && move.end.second == kingCol) {
+      return true;
+    } 
+  }
+  return false;
+} 
+
+
 bool Player::move(unique_ptr<Board>& b) {
     vector<Move> allmoves = possibleMoves(b);
     Move move = chooseMove(b);
@@ -33,11 +58,15 @@ bool Player::move(unique_ptr<Board>& b) {
             move.captured_piece = b->at(end.first, end.second)->getSymbol();
         }
 
-        unique_ptr<Move> castle_move = checkCastle(b, start, end);
-        if(castle_move != nullptr) {
+      unique_ptr<Move> castle_move = checkCastle(b, start, end);
+      if(castle_move != nullptr) {
           b->placePiece(castle_move->end.first, castle_move->end.second, std::move(b->at(castle_move->start.first, castle_move->start.second)));
           b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
-          return true;
+          b->removePiece(start.first, start.second);
+          b->removePiece(castle_move->start.first, castle_move->start.second);
+          b->prevMoves.push(move);
+          b->prevMoves.push(*castle_move);
+         return true;
         }
         bool movedToEmpty = b->at(end.first, end.second) == nullptr;
         b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));

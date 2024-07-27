@@ -14,15 +14,14 @@ class Player;
 class Board{
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     bool p1Turn, custom;
-    
     bool validateBoard();
-    void undo();
   public:
     std::stack<Move> prevMoves;
 
     Board();
     void setup();
     void resetBoard();
+    void undo();
     void print(std::ostream&) const;
     void placePiece(int, int, std::unique_ptr<Piece>&&);
     void removePiece(int, int);

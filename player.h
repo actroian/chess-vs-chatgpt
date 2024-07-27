@@ -22,6 +22,7 @@ class Player {
     void setInCheck(bool);
     void setPieces(std::vector<std::unique_ptr<Piece>&>);
     bool isP1();
+    bool kingInCheck(std::unique_ptr<Board>& b, std::unique_ptr<Player>& p2 ) const;
     virtual ~Player() = 0;
 };
 

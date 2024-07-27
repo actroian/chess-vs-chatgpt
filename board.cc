@@ -205,10 +205,11 @@ void Board::undo() {
 
   Move lastMove = prevMoves.top();
   prevMoves.pop();
-
-  string piece;
-  piece += lastMove.captured_piece;
-
   placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
-  placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
+  removePiece(lastMove.end.first, lastMove.end.second);
+  if(lastMove.captured_piece){
+    string piece = string{lastMove.captured_piece};
+    placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
+  }
+  print(cout);
 }

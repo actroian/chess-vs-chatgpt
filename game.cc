@@ -122,9 +122,24 @@ bool Game::move(){
   bool piecemoved;
   if(board->isP1Turn()){
     piecemoved = p1->move(board);
+    if(p1->kingInCheck(board, p2)){
+      p1->setInCheck(true);
+      board->undo();
+      cout<<"Invalid move: Must move out of check"<< endl;
+      return false;
+    }
+    p1->setInCheck(false);
+
   }
   else{
     piecemoved = p2->move(board);
+    if(p2->kingInCheck(board, p1)){
+      p1->setInCheck(true);
+      board->undo();
+      cout<<"Invalid move: Must move out of check"<< endl;
+      return false;
+    }
+    p2->setInCheck(false);
   }
 
   if (!piecemoved) {
