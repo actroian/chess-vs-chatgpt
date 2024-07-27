@@ -1,0 +1,14 @@
+setup
++ K e1
++ R a1
++ k e8
++ r a8
++ q d5
+= white
+done
+game
+human
+human
+move e1 c1
+move e8 c8
+q

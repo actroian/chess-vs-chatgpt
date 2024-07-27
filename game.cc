@@ -121,7 +121,7 @@ void Game::setup() {
 bool Game::move(){
   bool piecemoved;
   if(board->isP1Turn()){
-    piecemoved = p1->move(board);
+    piecemoved = p1->move(board, p2);
     if(p1->kingInCheck(board, p2)){
       p1->setInCheck(true);
       board->undo();
@@ -132,7 +132,7 @@ bool Game::move(){
 
   }
   else{
-    piecemoved = p2->move(board);
+    piecemoved = p2->move(board, p1);
     if(p2->kingInCheck(board, p1)){
       p1->setInCheck(true);
       board->undo();
