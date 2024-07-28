@@ -5,15 +5,13 @@
 #include <utility>
 #include "piece.h"
 
-using namespace std;
-
 class Move {
 public:
     std::pair<int, int> start;
     std::pair<int, int> end;
     char captured_piece;
 
-    Move(std::pair<int, int> start, std::pair<int, int> end, char captured_piece = '\0');
+    Move(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0');
     virtual ~Move() = 0;
 
     virtual void move(Board& board) const = 0;
@@ -25,7 +23,7 @@ public:
 
 class NormalMove : public Move {
 public:
-    NormalMove(std::pair<int, int> start, std::pair<int, int> end, char captured_piece = '\0');
+    NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0');
 
     void move(Board& board) const override;
     void undo(Board& board) const override;
@@ -41,7 +39,7 @@ public:
     std::pair<int, int> rookstart;
     std::pair<int, int> rookend;
 
-    CastleMove(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> rookstart, std::pair<int, int> rookend);
+    CastleMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& rookstart, const std::pair<int, int>& rookend);
 
     void move(Board& board) const override;
     void undo(Board& board) const override;
@@ -56,7 +54,7 @@ class EnpassantMove : public Move {
 public:
     std::pair<int, int> captured_position;
 
-    EnpassantMove(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> captured_position, char captured_piece = '\0');
+    EnpassantMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& captured_position, char captured_piece = '\0');
 
     void move(Board& board) const override;
     void undo(Board& board) const override;

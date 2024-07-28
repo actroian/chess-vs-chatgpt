@@ -1,8 +1,8 @@
 #include "move.h"
 #include "board.h"
 
-Move::Move(std::pair<int, int> start, std::pair<int, int> end, char captured_piece)
-    : start{start}, end{end}, captured_piece{captured_piece} {}
+Move::Move(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece)
+    : start(start), end(end), captured_piece(captured_piece) {}
 
 Move::~Move() {}
 
@@ -14,8 +14,8 @@ bool Move::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-NormalMove::NormalMove(std::pair<int, int> start, std::pair<int, int> end)
-    : Move{start, end} {}
+NormalMove::NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece)
+    : Move(start, end, captured_piece) {}
 
 void NormalMove::move(Board& board) const {
     board.placePiece(end.first, end.second, std::move(board.at(start.first, start.second)));
@@ -40,7 +40,7 @@ bool NormalMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-CastleMove::CastleMove(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> rookstart, std::pair<int, int> rookend)
+CastleMove::CastleMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& rookstart, const std::pair<int, int>& rookend)
     : Move(start, end), rookstart(rookstart), rookend(rookend) {}
 
 void CastleMove::move(Board& board) const {
@@ -66,7 +66,7 @@ bool CastleMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-EnpassantMove::EnpassantMove(std::pair<int, int> start, std::pair<int, int> end, std::pair<int, int> captured_position, char captured_piece)
+EnpassantMove::EnpassantMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& captured_position, char captured_piece)
     : Move(start, end, captured_piece), captured_position(captured_position) {}
 
 void EnpassantMove::move(Board& board) const {

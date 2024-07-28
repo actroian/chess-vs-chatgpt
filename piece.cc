@@ -5,13 +5,13 @@
 using namespace std;
 
 // Helper function to create and emplace a NormalMove
-void emplaceNormalMove(std::vector<std::unique_ptr<Move>>& moves, int startRow, int startCol, int endRow, int endCol, char capturedPiece = '\0') {
-    moves.emplace_back(std::make_unique<NormalMove>(std::make_pair(startRow, startCol), std::make_pair(endRow, endCol), capturedPiece));
+void emplaceNormalMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, char capturedPiece = '\0') {
+    moves.emplace_back(std::make_unique<NormalMove>(start, end, capturedPiece));
 }
 
 // Helper function to create and emplace an EnpassantMove
-void emplaceEnpassantMove(std::vector<std::unique_ptr<Move>>& moves, int startRow, int startCol, int endRow, int endCol, int capturedRow, int capturedCol, char capturedPiece) {
-    moves.emplace_back(std::make_unique<EnpassantMove>(std::make_pair(startRow, startCol), std::make_pair(endRow, endCol), std::make_pair(capturedRow, capturedCol), capturedPiece));
+void emplaceEnpassantMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& capturedPosition, char capturedPiece) {
+    moves.emplace_back(std::make_unique<EnpassantMove>(start, end, capturedPosition, capturedPiece));
 }
 
 Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite}, unmoved{true} {}
@@ -34,49 +34,49 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
 
     if (isWhite) {
         if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
-            emplaceNormalMove(moves, row, col, row-1, col);
+            emplaceNormalMove(moves, {row, col}, {row-1, col});
         }
         if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) {
-            emplaceNormalMove(moves, row, col, row-2, col);
+            emplaceNormalMove(moves, {row, col}, {row-2, col});
         }
         if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) {
-            emplaceNormalMove(moves, row, col, row-1, col-1, b.at(row-1, col-1)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row-1, col-1}, b.at(row-1, col-1)->getSymbol());
         }
         if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) {
-            emplaceNormalMove(moves, row, col, row-1, col+1, b.at(row-1, col+1)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row-1, col+1}, b.at(row-1, col+1)->getSymbol());
         }
 
         // en passant
         if (pawnDoubleMovedLast) {
             int r = row;
             if (lastMove->end == std::make_pair(r, col + 1) && !b.at(row, col + 1)->isWhitePiece()) {
-                emplaceEnpassantMove(moves, row, col, row - 1, col + 1, row, col + 1, b.at(row, col + 1)->getSymbol());
+                emplaceEnpassantMove(moves, {row, col}, {row - 1, col + 1}, {row, col + 1}, b.at(row, col + 1)->getSymbol());
             }
             if (lastMove->end == std::make_pair(r, col - 1) && !b.at(row, col - 1)->isWhitePiece()) {
-                emplaceEnpassantMove(moves, row, col, row - 1, col - 1, row, col - 1, b.at(row, col - 1)->getSymbol());
+                emplaceEnpassantMove(moves, {row, col}, {row - 1, col - 1}, {row, col - 1}, b.at(row, col - 1)->getSymbol());
             }
         }
     } else {
         if (row+1 <= 7 && b.at(row+1, col) == nullptr) {
-            emplaceNormalMove(moves, row, col, row+1, col);
+            emplaceNormalMove(moves, {row, col}, {row+1, col});
         }
         if (unmoved && row+2 <= 7 && b.at(row+1, col) == nullptr && b.at(row+2, col) == nullptr) {
-            emplaceNormalMove(moves, row, col, row+2, col);
+            emplaceNormalMove(moves, {row, col}, {row+2, col});
         }
         if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) {
-            emplaceNormalMove(moves, row, col, row+1, col-1, b.at(row+1, col-1)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row+1, col-1}, b.at(row+1, col-1)->getSymbol());
         }
         if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) {
-            emplaceNormalMove(moves, row, col, row+1, col+1, b.at(row+1, col+1)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row+1, col+1}, b.at(row+1, col+1)->getSymbol());
         }
         // en passant
         if (pawnDoubleMovedLast) {
             int r = row;
             if (lastMove->end == std::make_pair(r, col+1) && b.at(row, col+1)->isWhitePiece()) {
-                emplaceEnpassantMove(moves, row, col, row+1, col+1, row, col+1, b.at(row, col+1)->getSymbol());
+                emplaceEnpassantMove(moves, {row, col}, {row+1, col+1}, {row, col+1}, b.at(row, col+1)->getSymbol());
             }
             if (lastMove->end == std::make_pair(r, col-1) && b.at(row, col-1)->isWhitePiece()) {
-                emplaceEnpassantMove(moves, row, col, row+1, col-1, row, col-1, b.at(row, col-1)->getSymbol());
+                emplaceEnpassantMove(moves, {row, col}, {row+1, col-1}, {row, col-1}, b.at(row, col-1)->getSymbol());
             }
         }
     }
@@ -94,7 +94,7 @@ vector<unique_ptr<Move>> King::validMoves() const {
         for (int c = -1; c <= 1; ++c) {
             int newCol = col + c;
             if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.moveable(isWhite, {newRow, newCol})) {
-                emplaceNormalMove(moves, row, col, newRow, newCol, b.at(newRow, newCol) == nullptr ? '\0' : b.at(newRow, newCol)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {newRow, newCol}, b.at(newRow, newCol) == nullptr ? '\0' : b.at(newRow, newCol)->getSymbol());
             }
         }
     }
@@ -146,7 +146,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     int r = row + 1, c = col + 1;
     while (r <= 7 && c <= 7) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, row, col, r, c, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
         }
         if (b.at(r, c) != nullptr) break;
         ++r; ++c;
@@ -154,7 +154,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row - 1; c = col - 1;
     while (r >= 0 && c >= 0) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, row, col, r, c, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
         }
         if (b.at(r, c) != nullptr) break;
         --r; --c;
@@ -162,7 +162,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row + 1; c = col - 1;
     while (r <= 7 && c >= 0) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, row, col, r, c, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
         }
         if (b.at(r, c) != nullptr) break;
         ++r; --c;
@@ -170,7 +170,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row - 1; c = col + 1;
     while (r >= 0 && c <= 7) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, row, col, r, c, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
         }
         if (b.at(r, c) != nullptr) break;
         --r; ++c;
@@ -189,26 +189,26 @@ vector<unique_ptr<Move>> Rook::validMoves() const {
     // add all valid horizontal moves
     for (int c = col + 1; c <= 7; c++) {
         if (b.moveable(isWhite, {row, c})) {
-            emplaceNormalMove(moves, row, col, row, c, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row, c}, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
         }
         if (b.at(row, c) != nullptr) break;
     }
     for (int c = col - 1; c >= 0; c--) {
         if (b.moveable(isWhite, {row, c})) {
-            emplaceNormalMove(moves, row, col, row, c, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row, c}, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
         }
         if (b.at(row, c) != nullptr) break;
     }
     // add all valid vertical moves
     for (int r = row + 1; r <= 7; r++) {
         if (b.moveable(isWhite, {r, col})) {
-            emplaceNormalMove(moves, row, col, r, col, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, col}, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
         }
         if (b.at(r, col) != nullptr) break;
     }
     for (int r = row - 1; r >= 0; r--) {
         if (b.moveable(isWhite, {r, col})) {
-            emplaceNormalMove(moves, row, col, r, col, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, col}, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
         }
         if (b.at(r, col) != nullptr) break;
     }
@@ -249,28 +249,28 @@ vector<unique_ptr<Move>> Knight::validMoves() const {
     vector<unique_ptr<Move>> moves;
 
     if (row+1 <= 7 && col+2 <= 7 && b.moveable(isWhite, {row+1, col+2})) {
-        emplaceNormalMove(moves, row, col, row+1, col+2);
+        emplaceNormalMove(moves, {row, col}, {row+1, col+2});
     }
     if (row+2 <= 7 && col+1 <= 7 && b.moveable(isWhite, {row+2, col+1})) {
-        emplaceNormalMove(moves, row, col, row+2, col+1);
+        emplaceNormalMove(moves, {row, col}, {row+2, col+1});
     }
     if (row+1 <= 7 && col-2 >= 0 && b.moveable(isWhite, {row+1, col-2})) {
-        emplaceNormalMove(moves, row, col, row+1, col-2);
+        emplaceNormalMove(moves, {row, col}, {row+1, col-2});
     }
     if (row+2 <= 7 && col-1 >= 0 && b.moveable(isWhite, {row+2, col-1})) {
-        emplaceNormalMove(moves, row, col, row+2, col-1);
+        emplaceNormalMove(moves, {row, col}, {row+2, col-1});
     }
     if (row-1 >= 0 && col+2 <= 7 && b.moveable(isWhite, {row-1, col+2})) {
-        emplaceNormalMove(moves, row, col, row-1, col+2);
+        emplaceNormalMove(moves, {row, col}, {row-1, col+2});
     }
     if (row-2 >= 0 && col+1 <= 7 && b.moveable(isWhite, {row-2, col+1})) {
-        emplaceNormalMove(moves, row, col, row-2, col+1);
+        emplaceNormalMove(moves, {row, col}, {row-2, col+1});
     }
     if (row-1 >= 0 && col-2 >= 0 && b.moveable(isWhite, {row-1, col-2})) {
-        emplaceNormalMove(moves, row, col, row-1, col-2);
+        emplaceNormalMove(moves, {row, col}, {row-1, col-2});
     }
     if (row-2 >= 0 && col-1 >= 0 && b.moveable(isWhite, {row-2, col-1})) {
-        emplaceNormalMove(moves, row, col, row-2, col-1);
+        emplaceNormalMove(moves, {row, col}, {row-2, col-1});
     }
 
     return moves;
