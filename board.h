@@ -16,7 +16,7 @@ class Board{
     bool p1Turn, custom;
     bool validateBoard();
   public:
-    std::stack<Move> prevMoves;
+    std::stack<std::unique_ptr<Move>> prevMoves;
 
     Board();
     void setup();

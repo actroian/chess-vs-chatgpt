@@ -4,11 +4,14 @@ using namespace std;
 
 Board::Board() : p1Turn{true}, custom{false} {
     // initialize empty board
-  for (int i = 0; i <= 7; ++i) {
-    vector<unique_ptr<Piece>> row(8);
-    board.push_back(std::move(row));
-  }
+    for (int i = 0; i <= 7; ++i) {
+        std::vector<std::unique_ptr<Piece>> row(8);
+        board.push_back(std::move(row));
+    }
+    // Push a dummy move onto prevMoves stack to handle empty case
+    prevMoves.push(std::make_unique<NormalMove>(std::make_pair(-1, -1), std::make_pair(-1, -1)));
 }
+
 
 bool Board::isCustom() const { return custom; }
 void Board::resetBoard() {
