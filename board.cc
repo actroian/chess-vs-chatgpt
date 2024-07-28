@@ -2,7 +2,7 @@
 #include "globals.h"
 using namespace std;
 
-Board::Board() : p1Turn{true}, custom{false} {
+Board::Board() : p1Turn{true}, custom{false}, window{185,185} {
     // initialize empty board
   for (int i = 0; i <= 7; ++i) {
     vector<unique_ptr<Piece>> row(8);
@@ -37,33 +37,53 @@ void Board::resetBoard() {
     }
 }
 
-void Board::print(std::ostream& out) const {
-    for (int r = 0; r <= 7; ++r) {
-    out << 8-r << " ";
+void Board::print(std::ostream& out) {
+  // clear window to prevent layering
+  window.fillRectangle(0,0,185,185,0);
+
+  string terminalOutput, xwindowOutput;
+  for (int r = 0; r <= 7; ++r) {
+    string num = to_string(8-r) + " ";
+    out << num;
+    window.drawString(5, 20*(r+1), num);
     for (int c = 0; c <= 7; ++c) {
       auto& cell = board[r][c];
+      int screenX = c * 20;
+      int screenY = r * 20;
       if (cell == nullptr) {
         if ((r%2 == 0 && c%2 == 0) || (r%2 == 1 && c%2 == 1)) {
-          out << " ";
+          terminalOutput = " ";
+          xwindowOutput = " ";
           // can also try using ░
         }
         else {
-          out << "▒";
+          terminalOutput = "▒";
+          xwindowOutput = "_";
         }
       }
       else {
         char symbol = cell->getSymbol();
-        if (tolower(symbol) == 'p') out << (cell->isWhitePiece() ? "♟︎":"♙");
-        else if (tolower(symbol) == 'b') out << (cell->isWhitePiece() ? "♝":"♗");
-        else if (tolower(symbol) == 'k') out << (cell->isWhitePiece() ? "♚":"♔");
-        else if (tolower(symbol) == 'q') out << (cell->isWhitePiece() ? "♛":"♕");
-        else if (tolower(symbol) == 'r') out << (cell->isWhitePiece() ? "♜":"♖");
-        else if (tolower(symbol) == 'n') out << (cell->isWhitePiece() ? "♞":"♘");
+        xwindowOutput = string(1, symbol);
+        if (tolower(symbol) == 'p') terminalOutput = (cell->isWhitePiece() ? "♟︎":"♙");
+        else if (tolower(symbol) == 'b') terminalOutput = (cell->isWhitePiece() ? "♝":"♗");
+        else if (tolower(symbol) == 'k') terminalOutput = (cell->isWhitePiece() ? "♚":"♔");
+        else if (tolower(symbol) == 'q') terminalOutput = (cell->isWhitePiece() ? "♛":"♕");
+        else if (tolower(symbol) == 'r') terminalOutput = (cell->isWhitePiece() ? "♜":"♖");
+        else if (tolower(symbol) == 'n') terminalOutput = (cell->isWhitePiece() ? "♞":"♘");
       }
+      out << terminalOutput;
+      window.drawString(screenX + 20, screenY + 20, xwindowOutput);
     }
     out << endl;
   }
-  out << endl << "  abcdefgh" << endl << endl;
+  terminalOutput = "  abcdefgh";
+  xwindowOutput = terminalOutput.substr(2);
+
+  out << endl << terminalOutput << endl << endl;
+  for (int i = 0; i < xwindowOutput.length(); i++) {
+    string letter = string(1,xwindowOutput[i]);
+    window.drawString(20*i + 20, 20*9, letter);
+  }
 }
 
 void Board::placePiece(int row, int col, unique_ptr<Piece>&& piece) {
@@ -94,6 +114,8 @@ void Board::clearBoard() {
         }
     }
     custom = false;
+    stack<Move> newPrevMoves;
+    std::swap(prevMoves, newPrevMoves);
 }
 
 unique_ptr<Piece> Board::createPiece(string& pieceType, const pair<int,int>& location) const {
