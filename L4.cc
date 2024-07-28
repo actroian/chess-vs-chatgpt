@@ -47,8 +47,7 @@ std::string L4::callChatGPT(const std::string& prompt, const std::string& apiKey
         if(res != CURLE_OK) {
             ++attempts;
             if (attempts > 3) {
-                cout << "Issues making API request... terminating program." << endl;
-                exit(0);
+                return "";
             }
             callChatGPT(prompt, apiKey);
         }
@@ -85,9 +84,7 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
     if (response.find("error") != string::npos) {
         ++attempts;
         if (attempts > 3) {
-            cout << "Error: " << response << endl;
-            cout << "Terminating program." << endl;
-            exit(0);
+            L3::chooseMove(b);
         }
     }
     auto jsonResponse = json::parse(response);
@@ -105,8 +102,7 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
             std::find(boardLocations.begin(), boardLocations.end(), end) == boardLocations.end()) {
             ++attempts;
             if (attempts > 3) {
-                cout << "Too many incorrect outputs... terminating program." << endl;
-                exit(0);
+                L3::chooseMove(b);
             }
             return chooseMove(b);
         }
@@ -119,8 +115,7 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
     if (std::find(validMoves.begin(), validMoves.end(), move) == validMoves.end()) {
         ++attempts;
         if (attempts > 3) {
-            cout << "Too many invalid moves... terminating program." << endl;
-            exit(0);
+            L3::chooseMove(b);
         }
         cout << "ChatGPT valid move attempt #" << attempts << "..." << endl;
         return chooseMove(b);

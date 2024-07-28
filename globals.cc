@@ -3,6 +3,7 @@
 #include "player.h"
 using namespace std;
 
+vector<const string> validMainCommands = {"game","move","setup","resign", "q"};
 vector<const string> validPlayers = {"human", "computer1", "computer2", "computer3", "computer4"};
 vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
 vector<const string> validPromotions = {"r", "k", "b", "q"};

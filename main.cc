@@ -17,7 +17,9 @@ int main() {
   string cmd, arg1, arg2;
   Game game;
 
-  while (cin >> cmd) {
+  while (true) {
+    cmd = getInput("command", validMainCommands);
+
     if (cmd == "game" ) {
       arg1 = getInput("player", validPlayers);
       arg2 = getInput("player", validPlayers);
@@ -40,9 +42,14 @@ int main() {
     }
     else if (cmd == "move") {
       // invalid move prompts for a new command
-      if (!game.move()) continue;
+      bool validMove = game.move();
+      if (!validMove && ((game.p1->isABot() && game.board->isP1Turn()) || (game.p2->isABot() && !game.board->isP1Turn()))) {
+        do {
+          validMove = game.move();
+        } while (!validMove);
+      }
 
-      game.print();
+      game.print(validMove);
     }
     else if (cmd == "setup") {
       if (!game.isInGame()) {
