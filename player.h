@@ -11,11 +11,8 @@ class Player {
     bool isWhite;
     bool inCheck;
     bool isBot;
-    std::vector<pair<int, int>> myPiecePositions;
-
     std::unique_ptr<Move> checkCastle(std::unique_ptr<Board>& b, const std::pair<int,int>& start, const std::pair<int,int>& end);
     std::vector<Move> getOtherPlayersMoves(std::unique_ptr<Board>& b);
-    void getMyPiecePositions(std::unique_ptr<Board>& b, bool isWhite);
 
   public:
     Player(bool, bool = true);
@@ -30,6 +27,7 @@ class Player {
     void setPieces(std::vector<std::unique_ptr<Piece>&>);
     bool isP1();
     bool kingInCheck(std::unique_ptr<Board>& b, std::unique_ptr<Player>& p2 ) const;
+    std::vector<std::pair<int, int>> getMyPiecePositions(std::unique_ptr<Board>& b, bool isWhite);
     virtual ~Player() = 0;
 };
 

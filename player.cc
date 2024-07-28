@@ -22,18 +22,6 @@ std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::
     return nullptr;
 }
 
-void Player::getMyPiecePositions(unique_ptr<Board>& b, bool isWhite) {
-  for(int row = 0; row <= 7; row++) {
-    for(int col = 0; col <= 7; col++) {
-      if(b->at(row, col) != nullptr) {
-        if(b->at(row, col)->isWhitePiece() == isWhite){
-          myPiecePositions.push_back(make_pair(row, col));
-        }
-      } 
-    }
-  }
-}
-
 bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p) const {
   vector<Move> moves = p->possibleMoves(b);
   int kingRow = 0;
@@ -160,6 +148,20 @@ vector<Move> Player::possibleMoves(const unique_ptr<Board>& board) {
     }
   }
   return moves;
+}
+
+vector<pair<int, int>> Player::getMyPiecePositions(std::unique_ptr<Board>& b, bool isWhite) {
+  vector<pair<int, int>> myPos;
+  for(int row = 0; row <= 7; row++) {
+    for(int col = 0; col <= 7; col++) {
+      if(b->at(row, col) != nullptr) {
+        if(b->at(row, col)->isWhitePiece() == isWhite){
+          myPos.push_back(make_pair(row, col));
+        }
+      } 
+    }
+  }
+  return myPos;
 }
 
 Human::Human(bool isWhite): Player{isWhite, false} {}
