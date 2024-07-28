@@ -114,6 +114,8 @@ void Board::clearBoard() {
         }
     }
     custom = false;
+    stack<Move> newPrevMoves;
+    std::swap(prevMoves, newPrevMoves);
 }
 
 unique_ptr<Piece> Board::createPiece(string& pieceType, const pair<int,int>& location) const {

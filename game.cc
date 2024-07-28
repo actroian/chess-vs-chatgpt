@@ -48,20 +48,20 @@ void Game::print(bool lastMoveValid) {
 
   // check if game is in over
   if (p1->isInCheck()) {
-    if (p1->possibleMoves(board).size() == 0) {
+    if (p1->possibleMoves(board).empty()) {
       endGame(1);
       return;
     }
     out << "White is in check! ";
   }
   else if (p2->isInCheck()) {
-    if (p2->possibleMoves(board).size() == 0) {
+    if (p2->possibleMoves(board).empty()) {
       endGame(0);
       return;
     }
     out << "Black is in check! ";
   }
-  else if (p1->possibleMoves(board).size() == 0 && p2->possibleMoves(board).size() == 0) {
+  else if (p1->possibleMoves(board).empty() && p2->possibleMoves(board).empty()) {
     // stalemate
     endGame(2);
     return;
