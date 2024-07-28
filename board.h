@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "move.h"
 #include "piece.h"
+#include "window.h"
 
 class Player;
 class Piece;
@@ -16,6 +17,8 @@ class Board{
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     bool p1Turn, custom;
     bool validateBoard();
+    Xwindow window;
+
   public:
     std::stack<std::unique_ptr<Move>> prevMoves;
 
@@ -23,7 +26,7 @@ class Board{
     void setup();
     void resetBoard();
     void undo();
-    void print(std::ostream&) const;
+    void print(std::ostream&);
     void placePiece(int, int, std::unique_ptr<Piece>&&);
     void removePiece(int, int);
     std::unique_ptr<Piece>& at(int, int);
