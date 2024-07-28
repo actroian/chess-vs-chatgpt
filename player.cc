@@ -101,8 +101,13 @@ bool Player::move(unique_ptr<Board>& b, unique_ptr<Player>& p2) {
 
       unique_ptr<Move> castle_move = checkCastle(b, start, end);
       if(castle_move != nullptr) {
-          return castle(b, p2, move, castle_move);
+          if(castle(b, p2, move, castle_move)){
+            b->prevMoves.push(Move(start, end, '\0', castle_move->start, castle_move->end, true ));
+            return true;
+          };
+          return false;
       }
+      
       bool movedToEmpty = b->at(end.first, end.second) == nullptr;
       b->placePiece(end.first, end.second, std::move(b->at(start.first, start.second)));
       Pawn* p = dynamic_cast<Pawn*>(b->at(end.first, end.second).get());
