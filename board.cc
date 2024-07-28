@@ -213,13 +213,6 @@ void Board::undo() {
   prevMoves.pop();
   placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
   removePiece(lastMove.end.first, lastMove.end.second);
-<<<<<<< HEAD
-  if(lastMove.isCastleMove){
-    placePiece(lastMove.rookstart.first, lastMove.rookstart.second, std::move(at(lastMove.rookend.first, lastMove.rookend.second)));
-    removePiece(lastMove.rookend.first, lastMove.rookend.second);
-  }
-=======
->>>>>>> e32af829f97fdd261d215820133c2c890f65a38b
   if(lastMove.captured_piece){
     string piece = string{lastMove.captured_piece};
     placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));

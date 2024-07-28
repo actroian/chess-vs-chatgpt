@@ -3,16 +3,10 @@
 L3::L3(bool isWhite) : L2{isWhite} {}
 
 Move L3::chooseMove(unique_ptr<Board>& b) {
-    // Ensure random numbers are generated differently
-    srand(static_cast<unsigned int>(std::time(0)));
-
     vector<Move> avoid = avoidCaptureMoves(b);
-
-    // Randomly capture or check
-    int select = rand() % 2;
     int randomMove;
 
-    if (select && !avoid.empty()) {
+    if (!avoid.empty()) {
         randomMove = rand() % avoid.size();
         return avoid[randomMove];
     }
