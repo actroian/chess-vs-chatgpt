@@ -124,7 +124,6 @@ void Game::updateState(bool setupMode) {
 }
 
 void Game::setup() {
-
   p1 = createPlayer(HUMAN, true);
   p2 = createPlayer(HUMAN, false);
   board->setup();

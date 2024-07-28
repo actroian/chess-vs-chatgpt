@@ -12,3 +12,4 @@ testoutputs/
 obj/
 curl/
 nlohmann-json/
+graphicsdemo/

@@ -2,7 +2,7 @@
 #include "globals.h"
 using namespace std;
 
-Board::Board() : p1Turn{true}, custom{false} {
+Board::Board() : p1Turn{true}, custom{false}, window{100,100} {
     // initialize empty board
   for (int i = 0; i <= 7; ++i) {
     vector<unique_ptr<Piece>> row(8);
@@ -37,9 +37,11 @@ void Board::resetBoard() {
     }
 }
 
-void Board::print(std::ostream& out) const {
-    for (int r = 0; r <= 7; ++r) {
-    out << 8-r << " ";
+void Board::print(std::ostream& out) {
+  for (int r = 0; r <= 7; ++r) {
+    string num = to_string(8-r) + " ";
+    out << num;
+    window.drawString(10*r, 0, num);
     for (int c = 0; c <= 7; ++c) {
       auto& cell = board[r][c];
       if (cell == nullptr) {
