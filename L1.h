@@ -3,9 +3,6 @@
 #include "board.h"
 #include "move.h"
 #include "player.h"
-#include <stdlib.h> // for srand and rand
-#include <sys/types.h> // for getpid
-#include <unistd.h> // for getpid
 
 class Move;
 
