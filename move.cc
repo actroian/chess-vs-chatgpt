@@ -19,7 +19,7 @@ NormalMove::NormalMove(const std::pair<int, int>& start, const std::pair<int, in
 
 bool NormalMove::move(std::unique_ptr<Board>& board, std::unique_ptr<Player>& p1, std::unique_ptr<Player>& p2) const {
     board->placePiece(end.first, end.second, std::move(board->at(start.first, start.second)));
-    board->removePiece(start.first, start.second);\
+    board->removePiece(start.first, start.second);
     if(p1->kingInCheck(board, p2)){
         return false;
     }
@@ -54,9 +54,10 @@ bool CastleMove::move(unique_ptr<Board>& board, std::unique_ptr<Player>& movingp
             board->placePiece(start.first, i + 1, std::move(board->at(start.first, i)));
             board->removePiece(start.first, i);
             if (movingplayer->kingInCheck(board, opponent)) {
-                board->placePiece(start.first, i, std::move(board->at(start.first, i + 1)));
+                board->placePiece(end.first, end.second, std::move(board->at(start.first, i + 1)));
                 board->removePiece(start.first, i + 1);
-                board->print(cout);
+                board->placePiece(rookend.first, rookend.second, std::move(board->at(rookstart.first, rookstart.second)));
+    board->removePiece(rookstart.first, rookstart.second);
                 return false;
             }
         }
@@ -67,9 +68,10 @@ bool CastleMove::move(unique_ptr<Board>& board, std::unique_ptr<Player>& movingp
             board->placePiece(start.first, i - 1, std::move(board->at(start.first, i)));
             board->removePiece(start.first, i);
             if (movingplayer->kingInCheck(board, opponent)) {
-                board->placePiece(start.first, i, std::move(board->at(start.first, i - 1)));
+                board->placePiece(end.first, end.second, std::move(board->at(start.first, i - 1)));
                 board->removePiece(start.first, i - 1);
-                board->print(cout);
+board->placePiece(rookend.first, rookend.second, std::move(board->at(rookstart.first, rookstart.second)));
+    board->removePiece(rookstart.first, rookstart.second);
                 return false;
             }
         }
@@ -137,6 +139,7 @@ bool PromotionMove::move(unique_ptr<Board>& board, std::unique_ptr<Player>& movi
     string promotion = getInput("pawn promotion", validPromotions);
     promotion = movingplayer->isP1() ? toupper(promotion[0]) : tolower(promotion[0]);
     board->placePiece(end.first, end.second, board->createPiece(promotion, end));
+    board->removePiece(start.first, start.second);
     cout << "Pawn promoted to " << promotion << endl;
     return true;
 }

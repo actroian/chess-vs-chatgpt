@@ -32,10 +32,10 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
     unique_ptr<Move>& lastMove = b.prevMoves.top();
 
     // check if last move was by a pawn and it moved two squares
-    bool pawnDoubleMovedLast =
+    bool pawnDoubleMovedLast = (lastMove->end.second != -1 && b.at(lastMove->end.first, lastMove->end.second) != nullptr) ?
         !(b.prevMoves.size() <= 1) &&
         tolower(b.at(lastMove->end.first, lastMove->end.second)->getSymbol()) == 'p' &&
-        abs(lastMove->start.first - lastMove->end.first) == 2;
+        abs(lastMove->start.first - lastMove->end.first) == 2 : false;
 
     if (isWhite) {
         if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
