@@ -4,8 +4,8 @@ using namespace std;
 
 L2::L2(bool isWhite) : L1{isWhite} {}
 
-Move L2::chooseMove(unique_ptr<Board>& b) {
-    vector<Move> captures = captureMoves(b);
+unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b) {
+    vector<unique_ptr<Move>> captures = captureMoves(b);
     // vector<Move> checks = checkMoves(b);
 
     // // Randomly capture or check
@@ -15,7 +15,7 @@ Move L2::chooseMove(unique_ptr<Board>& b) {
     /*        Actual Implementation            */
     if (select && !captures.empty()) {
         randomMove = rand() % captures.size();
-        return captures[randomMove];
+        return std::move(captures[randomMove]);
     }
     // else if (!checks.empty()) {
     //     randomMove = rand() % checks.size();
@@ -24,30 +24,32 @@ Move L2::chooseMove(unique_ptr<Board>& b) {
         
     return L1::chooseMove(b);
 }
-
-vector<Move> L2::captureMoves(unique_ptr<Board>& b) {
+vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b) {
     // Implementation of getting capture moves for L2
-    vector<Move> captures;
-    vector<Move> allMoves = possibleMoves(b);
+    vector<unique_ptr<Move>> captures;
+    vector<unique_ptr<Move>> allMoves = possibleMoves(b);
     
-    for(const auto& move : allMoves) {
-        // Ensure the start position has a piece and the end position is not empty
-        if(b->at(move.start.first, move.start.second) != nullptr &&
-           b->at(move.end.first, move.end.second) != nullptr &&
-           b->at(move.end.first, move.end.second)->isWhitePiece() != isWhite) {
-            captures.push_back(move);
+    for (auto it = allMoves.begin(); it != allMoves.end(); ) {
+        if (b->at((*it)->start.first, (*it)->start.second) != nullptr &&
+            b->at((*it)->end.first, (*it)->end.second) != nullptr &&
+            b->at((*it)->end.first, (*it)->end.second)->isWhitePiece() != isWhite) {
+            captures.push_back(std::move(*it));
+            it = allMoves.erase(it); // Erase the moved element and advance the iterator
+        } else {
+            ++it;
         }
     }
+
     return captures;
 }
 
-vector<Move> L2::checkMoves(unique_ptr<Board>& b) {
-    vector<Move> checks;
-    vector<Move> allMoves = possibleMoves(b);
+vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b) {
+    vector<unique_ptr<Move>> checks;
+    vector<unique_ptr<Move>> allMoves = possibleMoves(b);
 
     for (const auto& move : allMoves) {
 
-        if(b->at(move.start.first, move.start.second) != nullptr) {
+        if(b->at(move->start.first, move->start.second) != nullptr) {
            // TODO: After Move Refactor
         }
     }

@@ -14,6 +14,11 @@ void emplaceEnpassantMove(std::vector<std::unique_ptr<Move>>& moves, const std::
     moves.emplace_back(std::make_unique<EnpassantMove>(start, end, capturedPosition, capturedPiece));
 }
 
+// Helper function to create and emplace a PromotionMove
+void emplacePromotionMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, char promotedTo, char capturedPiece = '\0') {
+    moves.emplace_back(std::make_unique<PromotionMove>(start, end, promotedTo, capturedPiece));
+}
+
 Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite}, unmoved{true} {}
 bool Piece::isWhitePiece(){return isWhite;}
 void Piece::moved() { unmoved = false; }
@@ -34,16 +39,28 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
 
     if (isWhite) {
         if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
-            emplaceNormalMove(moves, {row, col}, {row-1, col});
+            if (row-1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row-1, col}, 'Q'); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row-1, col});
+            }
         }
         if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) {
             emplaceNormalMove(moves, {row, col}, {row-2, col});
         }
         if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) {
-            emplaceNormalMove(moves, {row, col}, {row-1, col-1}, b.at(row-1, col-1)->getSymbol());
+            if (row-1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row-1, col-1}, 'Q', b.at(row-1, col-1)->getSymbol()); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row-1, col-1}, b.at(row-1, col-1)->getSymbol());
+            }
         }
         if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) {
-            emplaceNormalMove(moves, {row, col}, {row-1, col+1}, b.at(row-1, col+1)->getSymbol());
+            if (row-1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row-1, col+1}, 'Q', b.at(row-1, col+1)->getSymbol()); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row-1, col+1}, b.at(row-1, col+1)->getSymbol());
+            }
         }
 
         // en passant
@@ -58,16 +75,28 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
         }
     } else {
         if (row+1 <= 7 && b.at(row+1, col) == nullptr) {
-            emplaceNormalMove(moves, {row, col}, {row+1, col});
+            if (row+1 == 7) {
+                emplacePromotionMove(moves, {row, col}, {row+1, col}, 'q'); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row+1, col});
+            }
         }
         if (unmoved && row+2 <= 7 && b.at(row+1, col) == nullptr && b.at(row+2, col) == nullptr) {
             emplaceNormalMove(moves, {row, col}, {row+2, col});
         }
         if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) {
-            emplaceNormalMove(moves, {row, col}, {row+1, col-1}, b.at(row+1, col-1)->getSymbol());
+            if (row+1 == 7) {
+                emplacePromotionMove(moves, {row, col}, {row+1, col-1}, 'q', b.at(row+1, col-1)->getSymbol()); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row+1, col-1}, b.at(row+1, col-1)->getSymbol());
+            }
         }
         if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) {
-            emplaceNormalMove(moves, {row, col}, {row+1, col+1}, b.at(row+1, col+1)->getSymbol());
+            if (row+1 == 7) {
+                emplacePromotionMove(moves, {row, col}, {row+1, col+1}, 'q', b.at(row+1, col+1)->getSymbol()); // Assume promotion to Queen
+            } else {
+                emplaceNormalMove(moves, {row, col}, {row+1, col+1}, b.at(row+1, col+1)->getSymbol());
+            }
         }
         // en passant
         if (pawnDoubleMovedLast) {

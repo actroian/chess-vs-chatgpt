@@ -10,6 +10,7 @@
 #include "piece.h"
 
 class Player;
+class Piece;
 
 class Board{
     std::vector<std::vector<std::unique_ptr<Piece>>> board;

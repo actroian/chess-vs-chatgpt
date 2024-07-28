@@ -15,7 +15,7 @@ class Piece {
     bool isWhite, unmoved;
   public:
     Piece(int r, int c, Board& board, bool isWhite);
-    virtual std::vector<unique_ptr<Move>> validMoves() const = 0;
+    virtual std::vector<std::unique_ptr<Move>> validMoves() const = 0;
     virtual char getSymbol() const = 0;
     bool isWhitePiece();
     void moved();
@@ -27,38 +27,38 @@ class Piece {
 class Pawn: public Piece {
   public:
     Pawn(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 class King: public Piece {
     bool canCastle;
   public:
     King(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 class Bishop: public Piece {
   public:
     Bishop(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 class Rook: public Piece {
   public:
     Rook(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 class Queen: public Piece {
   public:
     Queen(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 class Knight: public Piece {
   public:
     Knight(int, int, Board&, bool);
-    std::vector<unique_ptr<Move>> validMoves() const override;
+    std::vector<std::unique_ptr<Move>> validMoves() const override;
     char getSymbol() const override;
 };
 

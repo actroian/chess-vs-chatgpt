@@ -1,4 +1,5 @@
 #include "board.h"
+#include "piece.h"
 #include "globals.h"
 using namespace std;
 
@@ -212,17 +213,7 @@ void Board::undo() {
     return;
   }
 
-  Move lastMove = prevMoves.top();
+  unique_ptr<Move>& lastMove = prevMoves.top();
   prevMoves.pop();
-  placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
-  removePiece(lastMove.end.first, lastMove.end.second);
-
-  if(lastMove.isCastleMove){
-    placePiece(lastMove.rookstart.first, lastMove.rookstart.second, std::move(at(lastMove.rookend.first, lastMove.rookend.second)));
-    removePiece(lastMove.rookend.first, lastMove.rookend.second);
-  }
-  else if(lastMove.captured_piece){
-    string piece = string{lastMove.captured_piece};
-    placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
-  }
+  lastMove->undo(*this);
 }

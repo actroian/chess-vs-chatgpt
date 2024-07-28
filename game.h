@@ -32,13 +32,14 @@ class Game {
     std::unique_ptr<Player> p1, p2;
     Game();
     bool isInGame() const;
-    bool move();
+    bool initiateMove();
     void print(bool = true);
     void updateState(bool setupMode = false);
     void reset();
     void setup();
     void endGame(int);
     void beginGame(const std::string&, const std::string&);
+    bool move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_ptr<Player>& opponent);
 };
 
 #endif

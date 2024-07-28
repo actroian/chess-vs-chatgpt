@@ -60,7 +60,7 @@ std::string L4::callChatGPT(const std::string& prompt, const std::string& apiKey
 
 L4::L4(bool isWhite) : L3{isWhite}, attempts{0} {}
 
-Move L4::chooseMove(unique_ptr<Board>& b) {
+unique_ptr<Move> L4::chooseMove(unique_ptr<Board>& b) {
     ostringstream s;
     b->print(s);
     
@@ -71,9 +71,9 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
     prompt += ".\nOnly provide moves for ";
     prompt += isWhite ? "White pieces (capital letters)" : "Black pieces (lowercase letters)";
     prompt += "\nChoose the best move from the following moves: {";
-    auto moves = possibleMoves(b);
+    vector<unique_ptr<Move>> moves = possibleMoves(b);
     for (const auto& m : moves) {
-        prompt += indToPos[m.start] + indToPos[m.end] + ",";
+        prompt += indToPos[m->start] + indToPos[m->end] + ",";
     }
     prompt += "}";
     prompt += ".\nYour move should be exactly 4 characters, describing the best move in the format 'a1a2'. For example, if you are moving a White piece, provide a move like 'E2E4', and if you are moving a Black piece, provide a move like 'e7e5'.";
@@ -110,8 +110,8 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
 
     attempts = 0;
 
-    Move move{posToInd[start], posToInd[end]};
-    vector<Move> validMoves = possibleMoves(b);
+    unique_ptr<Move> move = std::make_unique<NormalMove>(posToInd[start], posToInd[end]);
+    vector<unique_ptr<Move>> validMoves = possibleMoves(b);
     if (std::find(validMoves.begin(), validMoves.end(), move) == validMoves.end()) {
         ++attempts;
         if (attempts > 3) {
@@ -124,12 +124,12 @@ Move L4::chooseMove(unique_ptr<Board>& b) {
     return move;
 }
 
-vector<Move> L4::checkmateMoves() {
+vector<unique_ptr<Move>> L4::checkmateMoves() {
     // Implementation of getting checkmate moves for L3
     return {};
 }
 
-vector<Move> L4::avoidCaptureMoves() {
+vector<unique_ptr<Move>> L4::avoidCaptureMoves() {
     // Implementation of getting avoid capture moves for L3
     return {};
 }
