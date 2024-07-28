@@ -61,6 +61,9 @@ unique_ptr<Player> Game::createPlayer(const string& input, bool isWhite) {
   else if (input == L3input) {
     return make_unique<L3>(isWhite);
   }
+  else if (input == L4input) {
+    return make_unique<L4>(isWhite);
+  }
   else throw runtime_error("missing strings in validInputs vector");
 }
 void Game::beginGame(const string& p1type, const string& p2type) {
