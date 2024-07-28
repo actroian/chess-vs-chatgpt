@@ -4,10 +4,11 @@
 
 using namespace std;
 
-Player::Player(bool isWhite): isWhite{isWhite}, inCheck{false} {}
+Player::Player(bool isWhite, bool isBot): isWhite{isWhite}, inCheck{false}, isBot{isBot} {}
 Player::~Player() {}
 bool Player::isInCheck() const { return inCheck; }
 bool Player::isP1() { return isWhite; }
+bool Player::isABot() const { return isBot; }
 void Player::setInCheck(bool inCheck) { this->inCheck = inCheck; }
 std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::pair<int, int>& start, const std::pair<int, int>& end) {
     if (tolower(b->at(start.first, start.second)->getSymbol()) == 'k') {
@@ -56,7 +57,6 @@ bool Player::castle(std::unique_ptr<Board>& b, std::unique_ptr<Player>& p2, Move
             if (kingInCheck(b, p2)) {
                 b->placePiece(start.first, i, std::move(b->at(start.first, i + 1)));
                 b->removePiece(start.first, i + 1);
-                cout<<"Invalid move: Must move out of check"<< endl;
                 b->print(cout);
                 return false;
             }
@@ -70,7 +70,6 @@ bool Player::castle(std::unique_ptr<Board>& b, std::unique_ptr<Player>& p2, Move
             if (kingInCheck(b, p2)) {
                 b->placePiece(start.first, i, std::move(b->at(start.first, i - 1)));
                 b->removePiece(start.first, i - 1);
-                cout<<"Invalid move: Must move out of check"<< endl;
                 b->print(cout);
                 return false;
             }
@@ -128,16 +127,11 @@ bool Player::move(unique_ptr<Board>& b, unique_ptr<Player>& p2) {
       }
       b->prevMoves.push(move);
       return true;
-    } else {
-        // not valid
-        cout << "Invalid move, please enter a new command!" << endl;
-        return false;
     }
-    return false;
 
-  
+    return false;
 }
-vector<Move> Player::possibleMoves(unique_ptr<Board>& board) {
+vector<Move> Player::possibleMoves(const unique_ptr<Board>& board) {
   vector<Move> moves;
   for(int row = 0; row <= 7; ++row ) {
     for(int col = 0; col <= 7; ++col) {
@@ -156,7 +150,7 @@ vector<Move> Player::possibleMoves(unique_ptr<Board>& board) {
   return moves;
 }
 
-Human::Human(bool isWhite): Player{isWhite} {}
+Human::Human(bool isWhite): Player{isWhite, false} {}
 
 Move Human::chooseMove(unique_ptr<Board>& b) {
     string startLoc = getInput("location of piece you want to move", boardLocations);
