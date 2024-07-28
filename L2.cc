@@ -1,11 +1,10 @@
 #include "L2.h"
 
+using namespace std;
+
 L2::L2(bool isWhite) : L1{isWhite} {}
 
 Move L2::chooseMove(unique_ptr<Board>& b) {
-    // Ensure random numbers are generated differently
-    srand(static_cast<unsigned int>(std::time(0)));
-
     vector<Move> captures = captureMoves(b);
     // vector<Move> checks = checkMoves(b);
 
