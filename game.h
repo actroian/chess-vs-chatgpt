@@ -33,7 +33,7 @@ class Game {
     Game();
     bool isInGame() const;
     bool move();
-    void print() const;
+    void print(bool = true);
     void updateState(bool setupMode = false);
     void reset();
     void setup();

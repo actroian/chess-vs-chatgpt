@@ -12,16 +12,7 @@ void Game::reset() {
   p2->setInCheck(false);
 }
 bool Game::isInGame() const { return inGame; }
-void Game::print() const {
-  board->print(out);
 
-  if (p1->isInCheck() || p2->isInCheck()) {
-    cout << (p1->isInCheck() ? "White " : "Black ") << "is in check! ";
-  }
-
-  if (board->isP1Turn()) out << "White to move." << endl;
-  else out << "Black to move." << endl;
-}
 void Game::endGame(int state) {
   inGame = false;
 
@@ -46,6 +37,38 @@ void Game::endGame(int state) {
   out << "Black: " << bScore << endl << endl;
 
   reset();
+}
+
+void Game::print(bool lastMoveValid) {
+  board->print(out);
+
+  if (!lastMoveValid) {
+    out << "Invalid Move. ";
+  }
+
+  // check if game is in over
+  if (p1->isInCheck()) {
+    if (p1->possibleMoves(board).size() == 0) {
+      endGame(1);
+      return;
+    }
+    out << "White is in check! ";
+  }
+  else if (p2->isInCheck()) {
+    if (p2->possibleMoves(board).size() == 0) {
+      endGame(0);
+      return;
+    }
+    out << "Black is in check! ";
+  }
+  else if (p1->possibleMoves(board).size() == 0 && p2->possibleMoves(board).size() == 0) {
+    // stalemate
+    endGame(2);
+    return;
+  }
+
+  if (board->isP1Turn()) out << "White to move." << endl;
+  else out << "Black to move." << endl;
 }
 
 unique_ptr<Player> Game::createPlayer(const string& input, bool isWhite) {
@@ -128,7 +151,6 @@ bool Game::move(){
     if(p1->kingInCheck(board, p2)){
       p1->setInCheck(true);
       board->undo();
-      cout<<"Invalid move: Must move out of check"<< endl;
       return false;
     }
     p1->setInCheck(false);
@@ -139,7 +161,6 @@ bool Game::move(){
     if(p2->kingInCheck(board, p1)){
       p1->setInCheck(true);
       board->undo();
-      cout<<"Invalid move: Must move out of check"<< endl;
       return false;
     }
     p2->setInCheck(false);
