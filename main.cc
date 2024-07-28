@@ -1,9 +1,19 @@
 #include <iostream>
 #include "game.h"
 #include "globals.h"
+
+#include <stdlib.h> // for srand and rand
+#include <sys/types.h> // for getpid
+#include <unistd.h> // for getpid
+
 using namespace std;
 
 int main() {
+
+  // Seed the random number generator once at the start of the program
+  int seed = getpid();
+  srand(seed);
+
   string cmd, arg1, arg2;
   Game game;
 
