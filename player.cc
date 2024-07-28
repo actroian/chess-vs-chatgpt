@@ -21,8 +21,8 @@ std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::
     return nullptr;
 }
 
-bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p2 ) const {
-  vector<Move> moves = p2->possibleMoves(b);
+bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p) const {
+  vector<Move> moves = p->possibleMoves(b);
   int kingRow = 0;
   int kingCol = 0;
 
