@@ -2,30 +2,28 @@
 #include "player.h"
 using namespace std;
 
-L2::L2(bool isWhite) : L1{isWhite} {}
+L2::L2(bool isWhite) : L1(isWhite) {}
 
 unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
-    vector<unique_ptr<Move>> captures = captureMoves(b, p2);
-    // vector<Move> checks = checkMoves(b);
+    vector<unique_ptr<Move>> checks = checkMoves(b, p2);
 
-    // // Randomly capture or check
     int select = rand() % 2;
     int randomMove;
 
-    /*        Actual Implementation            */
-    if (select && !captures.empty()) {
-        randomMove = rand() % captures.size();
-        return std::move(captures[randomMove]);
+    cout << "Number of Check Moves: " << checks.size() << endl;
+    if(!checks.empty()) {
+        cout << "HERE HERE HERE HERE HERE HERE HERE HERE" << endl;
     }
-    // else if (!checks.empty()) {
-    //     randomMove = rand() % checks.size();
-    //     return checks[randomMove];
-    // }
-        
+
+    if (!checks.empty()) {
+        randomMove = rand() % checks.size();
+        return std::move(checks[randomMove]);
+    }
+
     return L1::chooseMove(b, p2);
 }
+
 vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b, Player* p2) {
-    // Implementation of getting capture moves for L2
     vector<unique_ptr<Move>> captures;
     vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
     
@@ -34,7 +32,7 @@ vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b, Player* p2) {
             b->at((*it)->end.first, (*it)->end.second) != nullptr &&
             b->at((*it)->end.first, (*it)->end.second)->isWhitePiece() != isWhite) {
             captures.push_back(std::move(*it));
-            it = allMoves.erase(it); // Erase the moved element and advance the iterator
+            it = allMoves.erase(it);
         } else {
             ++it;
         }
@@ -47,12 +45,21 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> checks;
     vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
 
-    for (const auto& move : allMoves) {
+    for (auto& move : allMoves) {
+        move->move(b, this, p2);
 
-        if(b->at(move->start.first, move->start.second) != nullptr) {
-           // TODO: After Move Refactor
+        vector<unique_ptr<Move>> moves = possibleMoves(b, p2, false);
+        for (auto& afterMove: moves) {
+            if(afterMove->start.first == move->end.first && afterMove->start.second == move->end.second) {
+                auto loc = afterMove->end;
+                if (b->at(loc.first, loc.second) != nullptr && tolower(b->at(loc.first, loc.second)->getSymbol()) == 'k') {
+                    checks.push_back(std::move(move));
+                    cout << "KING" << endl;
+                    break;
+                }
+            }         
         }
+        move->undo(*b);
     }
-
     return checks;
 }
