@@ -124,9 +124,7 @@ void Game::updateState(bool setupMode) {
   // update that the piece has been moved
   if(!setupMode){
     unique_ptr<Move>& lastMove = board->prevMoves.top();
-    if(board->at(lastMove->end.first, lastMove->end.second) != nullptr){
       board->at(lastMove->end.first, lastMove->end.second)->setUnmoved(false);
-    }
   }
 }
 
@@ -193,7 +191,7 @@ bool Game::move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_
     bool movefound = false;
 
     for(auto& validmove : allmoves){
-      if(validmove->start == move->start && validmove->end == move->end){
+      if( move != nullptr && validmove->start == move->start && validmove->end == move->end){
         move = std::move(validmove);
         movefound = true;
       }

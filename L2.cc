@@ -20,14 +20,14 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
 
     /* Actual Implementation */
 
-    // if(select && !captures.empty()) {
-    //     randomMove = rand() % captures.size();
-    //     return std::move(captures[randomMove]);
-    // }
-    // else if (!checks.empty()) {
-    //     randomMove = rand() % checks.size();
-    //     return std::move(checks[randomMove]);
-    // }
+    if(select && !captures.empty()) {
+        randomMove = rand() % captures.size();
+        return std::move(captures[randomMove]);
+    }
+    else if (!checks.empty()) {
+        randomMove = rand() % checks.size();
+        return std::move(checks[randomMove]);
+    }
 
     return L1::chooseMove(b, p2);
 }
@@ -55,19 +55,19 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
 
     for (auto& move : allMoves) {
+        if(move != nullptr){
         move->move(b, this, p2);
 
-        vector<unique_ptr<Move>> moves = possibleMoves(b, p2, false);
-        for (auto& afterMove: moves) {
-            if(afterMove->start.first == move->end.first && afterMove->start.second == move->end.second) {
-                auto loc = afterMove->end;
-                if (b->at(loc.first, loc.second) != nullptr && tolower(b->at(loc.first, loc.second)->getSymbol()) == 'k') {
-                    checks.push_back(std::move(move));
-                    break;
-                }
-            }         
+        bool isMoved = false;
+        
+        if (this->kingInCheck(b, this, p2)) {
+            move->undo(*b);
+            isMoved = true;
+            checks.push_back(std::move(move));
         }
-        move->undo(*b);
+        if(!isMoved){
+            move->undo(*b);
+        }}
     }
     return checks;
 }

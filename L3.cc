@@ -31,6 +31,7 @@ vector<unique_ptr<Move>> L3::avoidCaptureMoves(unique_ptr<Board>& b, Player* p2)
     // Fill capturePositions with positions from otherPlayersMoves
     for (const auto& move : otherPlayersMoves) {
         for (const auto& pos : myPos) {
+            if(move != nullptr){
             if (move->end.first == pos.first && move->end.second == pos.second) {
                 // Check if the position is already in capturePositions
                 bool found = false;
@@ -44,6 +45,7 @@ vector<unique_ptr<Move>> L3::avoidCaptureMoves(unique_ptr<Board>& b, Player* p2)
                     capturePositions.push_back(make_pair(pos.first, pos.second));
                 }
             }
+            }
         }
     }
 
@@ -53,11 +55,13 @@ vector<unique_ptr<Move>> L3::avoidCaptureMoves(unique_ptr<Board>& b, Player* p2)
 
     vector<unique_ptr<Move>> possibleAvoidMoves;
     for (auto& move : myMoves) {
+        if(move != nullptr){
         for (const auto& capturePos : capturePositions) {
             if (move->start.first == capturePos.first && move->start.second == capturePos.second) {
                 possibleAvoidMoves.push_back(std::move(move));
+                break;
             }
-        }
+        }}
     }
 
     return possibleAvoidMoves;
