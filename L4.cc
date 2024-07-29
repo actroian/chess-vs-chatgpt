@@ -46,11 +46,7 @@ std::string L4::callChatGPT(const std::string& prompt, const std::string& apiKey
         
         res = curl_easy_perform(curl);
         if(res != CURLE_OK) {
-            ++attempts;
-            if (attempts > 3) {
-                return "";
-            }
-            callChatGPT(prompt, apiKey);
+            throw runtime_error("ChatGPT API Call Error");
         }
 
         curl_easy_cleanup(curl);
@@ -59,9 +55,11 @@ std::string L4::callChatGPT(const std::string& prompt, const std::string& apiKey
     return readBuffer;
 }
 
-L4::L4(bool isWhite) : L3{isWhite}, attempts{0} {}
+L4::L4(bool isWhite) : L3{isWhite}, attempts{1} {}
 
 unique_ptr<Move> L4::chooseMove(unique_ptr<Board>& b, Player* p2) {
+    cout << "ChatGPT is choosing a move (attempt #" << attempts << ")..." << endl;
+
     ostringstream s;
     b->print(s);
     
@@ -81,56 +79,48 @@ unique_ptr<Move> L4::chooseMove(unique_ptr<Board>& b, Player* p2) {
     prompt += "\nPlease ensure you only move the correct pieces based on your color.";
     prompt += "\np = pawn, k = king, q = queen, b = bishop, n = knight, r = rook";
 
-    string response = callChatGPT(prompt, API_KEY);
-    if (response.find("error") != string::npos) {
-        ++attempts;
-        if (attempts > 3) {
-            L3::chooseMove(b, p2);
-        }
-    }
-    auto jsonResponse = json::parse(response);
+    unique_ptr<Move> move;
+    try {
+        string response = callChatGPT(prompt, API_KEY);
 
-    // Extract the text field from the response
-    string extractedText = jsonResponse["choices"][0]["message"]["content"].get<std::string>();
-    
-    string start, end;
-    if (extractedText.length() == 4) {
-        start = extractedText.substr(0,2);
-        start[0] = tolower(start[0]);
-        end = extractedText.substr(2,2);
-        end[0] = tolower(end[0]);
-        if (std::find(boardLocations.begin(), boardLocations.end(), start) == boardLocations.end() ||
-            std::find(boardLocations.begin(), boardLocations.end(), end) == boardLocations.end()) {
-            ++attempts;
-            if (attempts > 3) {
-                L3::chooseMove(b, p2);
+        if (response.find("error") != string::npos) {
+            throw runtime_error("ChatGPT API Call Error");
+        }
+
+        // Extract the text field from the response
+        auto jsonResponse = json::parse(response);
+        string extractedText = jsonResponse["choices"][0]["message"]["content"].get<std::string>();
+
+        string start, end;
+        if (extractedText.length() == 4) {
+            start = extractedText.substr(0,2);
+            start[0] = tolower(start[0]);
+            end = extractedText.substr(2,2);
+            end[0] = tolower(end[0]);
+            if (std::find(boardLocations.begin(), boardLocations.end(), start) == boardLocations.end() ||
+                std::find(boardLocations.begin(), boardLocations.end(), end) == boardLocations.end()) {
+                    throw runtime_error("ChatGPT Invalid Response Length");
             }
-            return chooseMove(b, p2);
+        }
+        move = std::make_unique<NormalMove>(posToInd[start], posToInd[end]);
+        vector<unique_ptr<Move>> validMoves = possibleMoves(b, p2);
+        auto it = std::find_if(validMoves.begin(), validMoves.end(),
+            [&](const std::unique_ptr<Move>& m) {
+                return *m == *move;
+        });
+        if (it == validMoves.end()) {
+            throw std::runtime_error("ChatGPT Invalid Move");
         }
     }
-
-    unique_ptr<Move> move = std::make_unique<NormalMove>(posToInd[start], posToInd[end]);
-    vector<unique_ptr<Move>> validMoves = possibleMoves(b, p2);
-    if (std::find(validMoves.begin(), validMoves.end(), move) == validMoves.end()) {
+    catch (runtime_error& e) {
         ++attempts;
         if (attempts > 3) {
-            L3::chooseMove(b, p2);
+            attempts = 1;
+            return L3::chooseMove(b, p2);
         }
-        cout << "ChatGPT valid move attempt #" << attempts << "..." << endl;
         return chooseMove(b, p2);
     }
 
-    attempts = 0;
-    
+    attempts = 1;
     return move;
-}
-
-vector<unique_ptr<Move>> L4::checkmateMoves() {
-    // Implementation of getting checkmate moves for L3
-    return {};
-}
-
-vector<unique_ptr<Move>> L4::avoidCaptureMoves() {
-    // Implementation of getting avoid capture moves for L3
-    return {};
 }
