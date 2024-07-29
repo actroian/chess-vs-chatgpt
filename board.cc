@@ -9,8 +9,6 @@ Board::Board() : p1Turn{true}, custom{false}, window{185,185} {
         std::vector<std::unique_ptr<Piece>> row(8);
         board.push_back(std::move(row));
     }
-    // Push a dummy move onto prevMoves stack to handle empty case
-    prevMoves.push(std::make_unique<NormalMove>(std::make_pair(-1, -1), std::make_pair(-1, -1)));
 }
 
 
@@ -118,7 +116,7 @@ void Board::clearBoard() {
         }
     }
     custom = false;
-    stack<Move> newPrevMoves;
+    stack<unique_ptr<Move>> newPrevMoves;
     std::swap(prevMoves, newPrevMoves);
 }
 

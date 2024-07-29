@@ -1,11 +1,11 @@
 #include "L2.h"
-
+#include "player.h"
 using namespace std;
 
 L2::L2(bool isWhite) : L1{isWhite} {}
 
-unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b) {
-    vector<unique_ptr<Move>> captures = captureMoves(b);
+unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
+    vector<unique_ptr<Move>> captures = captureMoves(b, p2);
     // vector<Move> checks = checkMoves(b);
 
     // // Randomly capture or check
@@ -22,12 +22,12 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b) {
     //     return checks[randomMove];
     // }
         
-    return L1::chooseMove(b);
+    return L1::chooseMove(b, p2);
 }
-vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b) {
+vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b, Player* p2) {
     // Implementation of getting capture moves for L2
     vector<unique_ptr<Move>> captures;
-    vector<unique_ptr<Move>> allMoves = possibleMoves(b);
+    vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
     
     for (auto it = allMoves.begin(); it != allMoves.end(); ) {
         if (b->at((*it)->start.first, (*it)->start.second) != nullptr &&
@@ -43,9 +43,9 @@ vector<unique_ptr<Move>> L2::captureMoves(unique_ptr<Board>& b) {
     return captures;
 }
 
-vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b) {
+vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> checks;
-    vector<unique_ptr<Move>> allMoves = possibleMoves(b);
+    vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
 
     for (const auto& move : allMoves) {
 

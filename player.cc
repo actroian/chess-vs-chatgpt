@@ -21,42 +21,64 @@ std::unique_ptr<Move> Player::checkCastle(std::unique_ptr<Board>& b, const std::
     }
     return nullptr;
 }
-bool Player::kingInCheck(unique_ptr<Board>& b, unique_ptr<Player>& p) const {
-  vector<unique_ptr<Move>> moves = p->possibleMoves(b);
-  int kingRow = 0;
-  int kingCol = 0;
-
-  for(int row = 0; row <= 7; row++) {
-    for(int col = 0; col <= 7; col++) {
-      if(b->at(row, col) != nullptr) {
-        if(b->at(row, col)->isWhitePiece() == isWhite && tolower(b->at(row, col)->getSymbol()) == 'k'){
-          kingRow = row;
-          kingCol = col;
-        }
-      } 
-    }
-  }
-
-  for(auto& move : moves){
-    if(move->end.first == kingRow && move->end.second == kingCol) {
-      return true;
-    } 
-  }
-  return false;
-} 
-
-
-vector<unique_ptr<Move>> Player::possibleMoves(const unique_ptr<Board>& board) {
+vector<unique_ptr<Move>> Player::allMoves(unique_ptr<Board>& board, Player* p2){
     vector<unique_ptr<Move>> moves;
     for (int row = 0; row <= 7; ++row) {
         for (int col = 0; col <= 7; ++col) {
             if (board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
                 vector<unique_ptr<Move>> validMoves = board->at(row, col)->validMoves();
                 for (auto& validmove : validMoves) {
-                    if (inCheck) {
-                        // TODO: if this player is currently in check, only add to moves if the move gets them out of check
+                  moves.push_back(std::move(validmove));
+                }
+            }
+        }
+    }
+    return moves;
+}
+
+bool Player::kingInCheck(unique_ptr<Board>& b, Player* p1,  Player* p2) {
+    vector<unique_ptr<Move>> moves = p2->allMoves(b, p1);
+    int kingRow = 0;
+    int kingCol = 0;
+
+    for (int row = 0; row <= 7; row++) {
+        for (int col = 0; col <= 7; col++) {
+            if (b->at(row, col) != nullptr) {
+                if (b->at(row, col)->isWhitePiece() == isWhite && tolower(b->at(row, col)->getSymbol()) == 'k') {
+                    kingRow = row;
+                    kingCol = col;
+                }
+            }
+        }
+    }
+
+    for (const auto& move : moves) {
+        if (move->end.first == kingRow && move->end.second == kingCol) {
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<unique_ptr<Move>> Player::possibleMoves(unique_ptr<Board>& board, Player* p2, bool checkTest) {
+    vector<unique_ptr<Move>> moves;
+    for (int row = 0; row <= 7; ++row) {
+        for (int col = 0; col <= 7; ++col) {
+            if (board->at(row, col) != nullptr && board->at(row, col)->isWhitePiece() == isWhite) {
+                vector<unique_ptr<Move>> validMoves = board->at(row, col)->validMoves();
+                for (auto& validmove : validMoves) {
+                    // Clone the move to avoid invalid state after move
+                    bool undone = false;
+                    if (validmove->move(board, this, p2)) {
+                        if (!kingInCheck(board, this, p2)) {
+                            validmove->undo(*board);
+                            undone = true;
+                            moves.push_back(std::move(validmove));
+                        } 
                     }
-                    moves.push_back(std::move(validmove));
+                    if(!undone){
+                      validmove->undo(*board);
+                    }
                 }
             }
         }
@@ -80,7 +102,7 @@ vector<pair<int, int>> Player::getMyPiecePositions(std::unique_ptr<Board>& b, bo
 
 Human::Human(bool isWhite): Player{isWhite, false} {}
 
-unique_ptr<Move> Human::chooseMove(unique_ptr<Board>& b) {
+unique_ptr<Move> Human::chooseMove(unique_ptr<Board>& b, Player* p2) {
     string startLoc = getInput("location of piece you want to move", boardLocations);
     string endLoc = getInput("location you want to move the piece to", boardLocations);
   

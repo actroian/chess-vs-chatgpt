@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -I./nlohmann-json/include -I/opt/homebrew/include -Wall -g
+CXXFLAGS = -std=c++14 -I./nlohmann-json/include -I/opt/homebrew/include -I/opt/X11/include -I./include -Wall -g
 
 EXEC = chess
 

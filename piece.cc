@@ -29,13 +29,20 @@ Pawn::Pawn(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 
 vector<unique_ptr<Move>> Pawn::validMoves() const {
     vector<unique_ptr<Move>> moves;
-    unique_ptr<Move>& lastMove = b.prevMoves.top();
+    bool pawnDoubleMovedLast = false;
+    const Move* lastMove = nullptr;
 
-    // check if last move was by a pawn and it moved two squares
-    bool pawnDoubleMovedLast = (lastMove->end.second != -1 && b.at(lastMove->end.first, lastMove->end.second) != nullptr) ?
-        !(b.prevMoves.size() <= 1) &&
-        tolower(b.at(lastMove->end.first, lastMove->end.second)->getSymbol()) == 'p' &&
-        abs(lastMove->start.first - lastMove->end.first) == 2 : false;
+    // Check if prevMoves is not empty before accessing the top
+    if (!b.prevMoves.empty()) {
+        lastMove = b.prevMoves.top().get();
+
+        // Check if lastMove is not nullptr and if lastMove->end has valid coordinates
+        if (lastMove != nullptr && b.at(lastMove->end.first, lastMove->end.second) != nullptr &&
+            !(b.prevMoves.size() <= 1) && tolower(b.at(lastMove->end.first, lastMove->end.second)->getSymbol()) == 'p' &&
+            abs(lastMove->start.first - lastMove->end.first) == 2) {
+            pawnDoubleMovedLast = true;
+        }
+    }
 
     if (isWhite) {
         if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
@@ -99,7 +106,7 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
             }
         }
         // en passant
-        if (pawnDoubleMovedLast) {
+        if (pawnDoubleMovedLast && lastMove != nullptr) {
             int r = row;
             if (lastMove->end == std::make_pair(r, col+1) && b.at(row, col+1)->isWhitePiece()) {
                 emplaceEnpassantMove(moves, {row, col}, {row+1, col+1}, {row, col+1}, b.at(row, col+1)->getSymbol());
