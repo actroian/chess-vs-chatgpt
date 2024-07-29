@@ -5,8 +5,14 @@
 using namespace std;
 
 // Helper function to create and emplace a NormalMove
-void emplaceNormalMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, char capturedPiece = '\0') {
-    moves.emplace_back(std::make_unique<NormalMove>(start, end, capturedPiece));
+void emplaceNormalMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, bool first_piece_move = false, Piece* capturedPiece = nullptr) {
+    bool captured_unmoved = false;
+    char capturedPieceChar = '\0';
+    if(capturedPiece != nullptr){
+        captured_unmoved = capturedPiece->isUnmoved();
+        capturedPieceChar = capturedPiece->getSymbol();
+    }
+    moves.emplace_back(std::make_unique<NormalMove>(start, end, capturedPieceChar, first_piece_move, captured_unmoved));
 }
 
 // Helper function to create and emplace an EnpassantMove
@@ -22,6 +28,7 @@ void emplacePromotionMove(std::vector<std::unique_ptr<Move>>& moves, const std::
 Piece::Piece(int r, int c, Board& b, bool isWhite): row{r}, col{c}, b{b}, isWhite{isWhite}, unmoved{true} {}
 bool Piece::isWhitePiece(){return isWhite;}
 void Piece::moved() { unmoved = false; }
+void Piece::setUnmoved(bool isUnmoved) { unmoved = isUnmoved; }
 void Piece::setPosition(int newRow, int newCol) { row = newRow; col = newCol; }
 bool Piece::isUnmoved() const { return unmoved; }
 
@@ -43,30 +50,31 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
             pawnDoubleMovedLast = true;
         }
     }
+        bool first_piece_unmoved = b.at(row, col)->isUnmoved();
 
     if (isWhite) {
         if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
             if (row-1 == 0) {
                 emplacePromotionMove(moves, {row, col}, {row-1, col}, 'Q'); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col});
+                emplaceNormalMove(moves, {row, col}, {row-1, col}, first_piece_unmoved);
             }
         }
         if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) {
-            emplaceNormalMove(moves, {row, col}, {row-2, col});
+            emplaceNormalMove(moves, {row, col}, {row-2, col}, first_piece_unmoved);
         }
         if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) {
             if (row-1 == 0) {
                 emplacePromotionMove(moves, {row, col}, {row-1, col-1}, 'Q', b.at(row-1, col-1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col-1}, b.at(row-1, col-1)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {row-1, col-1}, first_piece_unmoved, b.at(row-1, col-1).get() );
             }
         }
         if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) {
             if (row-1 == 0) {
                 emplacePromotionMove(moves, {row, col}, {row-1, col+1}, 'Q', b.at(row-1, col+1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col+1}, b.at(row-1, col+1)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {row-1, col+1}, first_piece_unmoved, b.at(row-1, col+1).get());
             }
         }
 
@@ -85,24 +93,24 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
             if (row+1 == 7) {
                 emplacePromotionMove(moves, {row, col}, {row+1, col}, 'q'); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row+1, col});
+                emplaceNormalMove(moves, {row, col}, {row+1, col}, first_piece_unmoved);
             }
         }
         if (unmoved && row+2 <= 7 && b.at(row+1, col) == nullptr && b.at(row+2, col) == nullptr) {
-            emplaceNormalMove(moves, {row, col}, {row+2, col});
+            emplaceNormalMove(moves, {row, col}, {row+2, col}, first_piece_unmoved);
         }
         if (row+1 <= 7 && col-1 >= 0 && b.at(row+1, col-1) != nullptr && b.at(row+1, col-1)->isWhitePiece()) {
             if (row+1 == 7) {
                 emplacePromotionMove(moves, {row, col}, {row+1, col-1}, 'q', b.at(row+1, col-1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row+1, col-1}, b.at(row+1, col-1)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {row+1, col-1}, first_piece_unmoved, b.at(row+1, col-1).get());
             }
         }
         if (row+1 <= 7 && col+1 <= 7 && b.at(row+1, col+1) != nullptr && b.at(row+1, col+1)->isWhitePiece()) {
             if (row+1 == 7) {
                 emplacePromotionMove(moves, {row, col}, {row+1, col+1}, 'q', b.at(row+1, col+1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row+1, col+1}, b.at(row+1, col+1)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {row+1, col+1}, first_piece_unmoved, b.at(row+1, col+1).get());
             }
         }
         // en passant
@@ -130,7 +138,7 @@ vector<unique_ptr<Move>> King::validMoves() const {
         for (int c = -1; c <= 1; ++c) {
             int newCol = col + c;
             if (newRow >= 0 && newRow <= 7 && newCol >= 0 && newCol <= 7 && b.moveable(isWhite, {newRow, newCol})) {
-                emplaceNormalMove(moves, {row, col}, {newRow, newCol}, b.at(newRow, newCol) == nullptr ? '\0' : b.at(newRow, newCol)->getSymbol());
+                emplaceNormalMove(moves, {row, col}, {newRow, newCol}, b.at(row, col)->isUnmoved(), b.at(newRow, newCol).get());
             }
         }
     }
@@ -179,10 +187,11 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     vector<unique_ptr<Move>> moves;
 
     // while loops that go diagonally in each direction on the Game until its out of bounds
+    bool first_piece_unmoved = b.at(row, col)->isUnmoved();
     int r = row + 1, c = col + 1;
     while (r <= 7 && c <= 7) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, first_piece_unmoved, b.at(r, c).get());
         }
         if (b.at(r, c) != nullptr) break;
         ++r; ++c;
@@ -190,7 +199,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row - 1; c = col - 1;
     while (r >= 0 && c >= 0) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, first_piece_unmoved, b.at(r, c).get());
         }
         if (b.at(r, c) != nullptr) break;
         --r; --c;
@@ -198,7 +207,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row + 1; c = col - 1;
     while (r <= 7 && c >= 0) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, first_piece_unmoved, b.at(r, c).get());
         }
         if (b.at(r, c) != nullptr) break;
         ++r; --c;
@@ -206,7 +215,7 @@ vector<unique_ptr<Move>> Bishop::validMoves() const {
     r = row - 1; c = col + 1;
     while (r >= 0 && c <= 7) {
         if (b.moveable(isWhite, {r, c})) {
-            emplaceNormalMove(moves, {row, col}, {r, c}, b.at(r, c) == nullptr ? '\0' : b.at(r, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, c}, first_piece_unmoved, b.at(r, c).get());
         }
         if (b.at(r, c) != nullptr) break;
         --r; ++c;
@@ -223,28 +232,29 @@ vector<unique_ptr<Move>> Rook::validMoves() const {
     vector<unique_ptr<Move>> moves;
 
     // add all valid horizontal moves
+    bool first_piece_unmoved = b.at(row, col)->isUnmoved();
     for (int c = col + 1; c <= 7; c++) {
         if (b.moveable(isWhite, {row, c})) {
-            emplaceNormalMove(moves, {row, col}, {row, c}, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row, c}, first_piece_unmoved, b.at(row, c).get());
         }
         if (b.at(row, c) != nullptr) break;
     }
     for (int c = col - 1; c >= 0; c--) {
         if (b.moveable(isWhite, {row, c})) {
-            emplaceNormalMove(moves, {row, col}, {row, c}, b.at(row, c) == nullptr ? '\0' : b.at(row, c)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {row, c}, first_piece_unmoved, b.at(row, c).get());
         }
         if (b.at(row, c) != nullptr) break;
     }
     // add all valid vertical moves
     for (int r = row + 1; r <= 7; r++) {
         if (b.moveable(isWhite, {r, col})) {
-            emplaceNormalMove(moves, {row, col}, {r, col}, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, col}, first_piece_unmoved, b.at(r, col).get());
         }
         if (b.at(r, col) != nullptr) break;
     }
     for (int r = row - 1; r >= 0; r--) {
         if (b.moveable(isWhite, {r, col})) {
-            emplaceNormalMove(moves, {row, col}, {r, col}, b.at(r, col) == nullptr ? '\0' : b.at(r, col)->getSymbol());
+            emplaceNormalMove(moves, {row, col}, {r, col}, first_piece_unmoved, b.at(r, col).get());
         }
         if (b.at(r, col) != nullptr) break;
     }
@@ -283,30 +293,30 @@ Knight::Knight(int r, int c, Board& b, bool isWhite): Piece{r, c, b, isWhite} {}
 
 vector<unique_ptr<Move>> Knight::validMoves() const {
     vector<unique_ptr<Move>> moves;
-
+    bool first_piece_unmoved = b.at(row, col)->isUnmoved();
     if (row+1 <= 7 && col+2 <= 7 && b.moveable(isWhite, {row+1, col+2})) {
-        emplaceNormalMove(moves, {row, col}, {row+1, col+2});
+        emplaceNormalMove(moves, {row, col}, {row+1, col+2}, first_piece_unmoved, b.at(row+1, col+2).get());
     }
     if (row+2 <= 7 && col+1 <= 7 && b.moveable(isWhite, {row+2, col+1})) {
-        emplaceNormalMove(moves, {row, col}, {row+2, col+1});
+        emplaceNormalMove(moves, {row, col}, {row+2, col+1}, first_piece_unmoved, b.at(row+2, col+1).get());
     }
     if (row+1 <= 7 && col-2 >= 0 && b.moveable(isWhite, {row+1, col-2})) {
-        emplaceNormalMove(moves, {row, col}, {row+1, col-2});
+        emplaceNormalMove(moves, {row, col}, {row+1, col-2}, first_piece_unmoved, b.at(row+1, col-2).get());
     }
     if (row+2 <= 7 && col-1 >= 0 && b.moveable(isWhite, {row+2, col-1})) {
-        emplaceNormalMove(moves, {row, col}, {row+2, col-1});
+        emplaceNormalMove(moves, {row, col}, {row+2, col-1}, first_piece_unmoved, b.at(row+2, col-1).get());
     }
     if (row-1 >= 0 && col+2 <= 7 && b.moveable(isWhite, {row-1, col+2})) {
-        emplaceNormalMove(moves, {row, col}, {row-1, col+2});
+        emplaceNormalMove(moves, {row, col}, {row-1, col+2}, first_piece_unmoved, b.at(row-1, col+2).get());
     }
     if (row-2 >= 0 && col+1 <= 7 && b.moveable(isWhite, {row-2, col+1})) {
-        emplaceNormalMove(moves, {row, col}, {row-2, col+1});
+        emplaceNormalMove(moves, {row, col}, {row-2, col+1}, first_piece_unmoved, b.at(row-2, col+1).get());
     }
     if (row-1 >= 0 && col-2 >= 0 && b.moveable(isWhite, {row-1, col-2})) {
-        emplaceNormalMove(moves, {row, col}, {row-1, col-2});
+        emplaceNormalMove(moves, {row, col}, {row-1, col-2}, first_piece_unmoved, b.at(row-1, col-2).get());
     }
     if (row-2 >= 0 && col-1 >= 0 && b.moveable(isWhite, {row-2, col-1})) {
-        emplaceNormalMove(moves, {row, col}, {row-2, col-1});
+        emplaceNormalMove(moves, {row, col}, {row-2, col-1}, first_piece_unmoved, b.at(row-2,  col-1).get());
     }
 
     return moves;

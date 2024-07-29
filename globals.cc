@@ -3,13 +3,13 @@
 #include "player.h"
 using namespace std;
 
-vector<const string> validMainCommands = {"game","move","setup","resign", "q"};
-vector<const string> validPlayers = {"human", "computer1", "computer2", "computer3", "computer4"};
-vector<const string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
-vector<const string> validPromotions = {"r", "k", "b", "q"};
-vector<const string> validSetupCommands = {"+", "-", "=", "done"};
-vector<const string> validColours = {"white", "black"};
-vector<const string> boardLocations = {
+vector<string> validMainCommands = {"game","move","setup","resign", "q"};
+vector<string> validPlayers = {"human", "computer1", "computer2", "computer3", "computer4"};
+vector<string> validPieces = {"p", "b", "k", "q", "n", "r", "P", "B", "K", "Q", "N", "R"};
+vector<string> validPromotions = {"r", "k", "b", "q"};
+vector<string> validSetupCommands = {"+", "-", "=", "done"};
+vector<string> validColours = {"white", "black"};
+vector<string> boardLocations = {
   "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8", 
   "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", 
   "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", 
@@ -19,8 +19,8 @@ vector<const string> boardLocations = {
   "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", 
   "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", 
 };
-map<const string, pair<int,int>> posToInd;
-map<const pair<int,int>, string> indToPos;
+map<string, pair<int,int>> posToInd;
+map<pair<int,int>, string> indToPos;
 
 const NormalMove NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
@@ -45,7 +45,7 @@ struct PosToIndInitializer {
 };
 PosToIndInitializer posToIndInitializer;
 
-string getInput(const string& item, vector<const string>& validInputs) {
+string getInput(const string& item, vector<string>& validInputs) {
   string input;
 
   while (true) {
