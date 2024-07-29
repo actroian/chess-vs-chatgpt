@@ -13,8 +13,6 @@ class L4: public L3 {
   public:
     L4(bool);
     unique_ptr<Move> chooseMove(unique_ptr<Board>& b, Player* p2) override;
-    vector<unique_ptr<Move>> checkmateMoves();
-    vector<unique_ptr<Move>> avoidCaptureMoves();
 };
 
 #endif
