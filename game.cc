@@ -13,6 +13,12 @@ void Game::reset() {
 }
 bool Game::isInGame() const { return inGame; }
 
+void Game::printScore(bool exiting) const {
+  out << endl << (exiting ? "Final" : "Current") << " Score:" << endl;
+  out << "White: " << wScore << endl;
+  out << "Black: " << bScore << endl << endl;
+}
+
 void Game::endGame(int state, bool resigned) {
   inGame = false;
 
@@ -34,10 +40,7 @@ void Game::endGame(int state, bool resigned) {
       out << "Stalemate!" << endl;
       break;
   }
-  out << endl << "Final Score:" << endl;
-  out << "White: " << wScore << endl;
-  out << "Black: " << bScore << endl << endl;
-
+  printScore();
   reset();
 }
 
@@ -63,7 +66,7 @@ void Game::print(bool lastMoveValid) {
     }
     out << "Black is in check! ";
   }
-  else if (p1->possibleMoves(board, p2.get()).empty() && p2->possibleMoves(board, p1.get()).empty()) {
+  else if ((board->isP1Turn() && p1->possibleMoves(board, p2.get()).empty()) || (!board->isP1Turn() && p2->possibleMoves(board, p1.get()).empty())) {
     // stalemate
     endGame(2);
     return;

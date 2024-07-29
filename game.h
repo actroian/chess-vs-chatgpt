@@ -32,6 +32,7 @@ class Game {
     std::unique_ptr<Player> p1, p2;
     Game();
     bool isInGame() const;
+    void printScore(bool = false) const;
     bool initiateMove();
     void print(bool = true);
     void updateState(bool setupMode = false);

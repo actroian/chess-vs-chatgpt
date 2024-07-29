@@ -41,6 +41,12 @@ int main() {
       else cout << "Cannot end game that is not in progress." << endl;
     }
     else if (cmd == "move") {
+      // check that game is in progress
+      if (!game.isInGame()) {
+        cout  << "Cannot make move while game is not in progress." << endl;
+        continue;
+      }
+
       // invalid move prompts for a new command
       bool validMove = game.initiateMove();
       if (!validMove && ((game.p1->isABot() && game.board->isP1Turn()) || (game.p2->isABot() && !game.board->isP1Turn()))) {
@@ -57,6 +63,9 @@ int main() {
       }
       else cout << "Cannot enter setup mode during a match." << endl;
     }
-    else if (cmd == "q") break;
+    else if (cmd == "q") {
+      game.printScore(true);
+      break;
+    };
   }
 }
