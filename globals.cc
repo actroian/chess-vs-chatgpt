@@ -22,7 +22,7 @@ vector<const string> boardLocations = {
 map<const string, pair<int,int>> posToInd;
 map<const pair<int,int>, string> indToPos;
 
-const Move NO_LAST_MOVE{{-1,-1},{-1,-1}};
+const NormalMove NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
 void initializePosToInd() {
     for (int i = 0; i < boardLocations.size(); ++i) {

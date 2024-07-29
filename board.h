@@ -11,6 +11,7 @@
 #include "window.h"
 
 class Player;
+class Piece;
 
 class Board{
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
@@ -19,7 +20,7 @@ class Board{
     Xwindow window;
 
   public:
-    std::stack<Move> prevMoves;
+    std::stack<std::unique_ptr<Move>> prevMoves;
 
     Board();
     void setup();

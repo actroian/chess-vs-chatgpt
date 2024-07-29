@@ -9,7 +9,7 @@ class Move;
 class L1: public Player {
   public:
     L1(bool);
-    Move chooseMove(std::unique_ptr<Board>& b) override;
+    std::unique_ptr<Move> chooseMove(std::unique_ptr<Board>& b, Player* p2) override;
 };
 
 #endif

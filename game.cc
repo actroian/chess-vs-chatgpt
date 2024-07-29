@@ -48,20 +48,20 @@ void Game::print(bool lastMoveValid) {
 
   // check if game is in over
   if (p1->isInCheck()) {
-    if (p1->possibleMoves(board).empty()) {
+    if (p1->possibleMoves(board, p2.get()).empty()) {
       endGame(1);
       return;
     }
     out << "White is in check! ";
   }
   else if (p2->isInCheck()) {
-    if (p2->possibleMoves(board).empty()) {
+    if (p2->possibleMoves(board, p1.get()).empty()) {
       endGame(0);
       return;
     }
     out << "Black is in check! ";
   }
-  else if (p1->possibleMoves(board).empty() && p2->possibleMoves(board).empty()) {
+  else if (p1->possibleMoves(board, p2.get()).empty() && p2->possibleMoves(board, p1.get()).empty()) {
     // stalemate
     endGame(2);
     return;
@@ -105,9 +105,9 @@ void Game::updateState(bool setupMode) {
   bool inCheck = false;
 
   // if p1's turn is coming up, we check if p2's current possible moves include capturing the king and vice versa
-  vector<Move> moves = checkWhite ? p2->possibleMoves(board) : p1->possibleMoves(board);
+  vector<unique_ptr<Move>> moves = checkWhite ? p2->possibleMoves(board, p1.get()) : p1->possibleMoves(board, p2.get());
   for (auto& move: moves) {
-    auto loc = move.end;
+    auto loc = move->end;
     if (board->at(loc.first, loc.second) != nullptr && tolower(board->at(loc.first, loc.second)->getSymbol()) == 'k') {
       inCheck = true;
       break;
@@ -118,8 +118,8 @@ void Game::updateState(bool setupMode) {
 
   // update that the piece has been moved
   if(!setupMode){
-    Move lastMove = board->prevMoves.top();
-    board->at(lastMove.end.first, lastMove.end.second)->moved();
+    unique_ptr<Move>& lastMove = board->prevMoves.top();
+    board->at(lastMove->end.first, lastMove->end.second)->moved();
   }
 }
 
@@ -143,11 +143,14 @@ void Game::setup() {
   p2 = nullptr;
 }
 
-bool Game::move(){
+bool Game::initiateMove(){
   bool piecemoved;
   if(board->isP1Turn()){
-    piecemoved = p1->move(board, p2);
-    if(p1->kingInCheck(board, p2)){
+    piecemoved = move(board, p1, p2);
+      if (!piecemoved) {
+    return false;
+  }
+    if(p1->kingInCheck(board, p1.get(), p2.get())){
       p1->setInCheck(true);
       board->undo();
       return false;
@@ -156,8 +159,11 @@ bool Game::move(){
 
   }
   else{
-    piecemoved = p2->move(board, p1);
-    if(p2->kingInCheck(board, p1)){
+    piecemoved = move(board, p2, p1);
+      if (!piecemoved) {
+    return false;
+  }
+    if(p2->kingInCheck(board, p2.get(), p1.get())){
       p1->setInCheck(true);
       board->undo();
       return false;
@@ -172,4 +178,29 @@ bool Game::move(){
   board->setP1Turn(!board->isP1Turn());
   updateState();
   return true;
+}
+
+bool Game::move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_ptr<Player>& opponent) {
+    vector<unique_ptr<Move>> allmoves = moving_player->possibleMoves(b, opponent.get());
+    unique_ptr<Move> move = moving_player->chooseMove(b, opponent.get());
+    auto start = move->start;
+    auto end = move->end;
+    bool movefound = false;
+
+    for(auto& validmove : allmoves){
+      if(validmove->start == move->start && validmove->end == move->end){
+        move = std::move(validmove);
+        movefound = true;
+      }
+    }
+    if (movefound) {
+      if(move->move(b, moving_player.get(), opponent.get())){
+        b->prevMoves.push(std::move(move));
+        return true;
+      }
+      else{
+        move->undo(*b);
+      }
+    }
+    return false;
 }

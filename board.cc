@@ -1,14 +1,16 @@
 #include "board.h"
+#include "piece.h"
 #include "globals.h"
 using namespace std;
 
 Board::Board() : p1Turn{true}, custom{false}, window{185,185} {
     // initialize empty board
-  for (int i = 0; i <= 7; ++i) {
-    vector<unique_ptr<Piece>> row(8);
-    board.push_back(std::move(row));
-  }
+    for (int i = 0; i <= 7; ++i) {
+        std::vector<std::unique_ptr<Piece>> row(8);
+        board.push_back(std::move(row));
+    }
 }
+
 
 bool Board::isCustom() const { return custom; }
 void Board::resetBoard() {
@@ -114,7 +116,7 @@ void Board::clearBoard() {
         }
     }
     custom = false;
-    stack<Move> newPrevMoves;
+    stack<unique_ptr<Move>> newPrevMoves;
     std::swap(prevMoves, newPrevMoves);
 }
 
@@ -231,17 +233,7 @@ void Board::undo() {
     return;
   }
 
-  Move lastMove = prevMoves.top();
+  unique_ptr<Move>& lastMove = prevMoves.top();
   prevMoves.pop();
-  placePiece(lastMove.start.first, lastMove.start.second, std::move(at(lastMove.end.first, lastMove.end.second)));
-  removePiece(lastMove.end.first, lastMove.end.second);
-
-  if(lastMove.isCastleMove){
-    placePiece(lastMove.rookstart.first, lastMove.rookstart.second, std::move(at(lastMove.rookend.first, lastMove.rookend.second)));
-    removePiece(lastMove.rookend.first, lastMove.rookend.second);
-  }
-  else if(lastMove.captured_piece){
-    string piece = string{lastMove.captured_piece};
-    placePiece(lastMove.end.first, lastMove.end.second, createPiece(piece, lastMove.end));
-  }
+  lastMove->undo(*this);
 }

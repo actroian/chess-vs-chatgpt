@@ -42,10 +42,10 @@ int main() {
     }
     else if (cmd == "move") {
       // invalid move prompts for a new command
-      bool validMove = game.move();
+      bool validMove = game.initiateMove();
       if (!validMove && ((game.p1->isABot() && game.board->isP1Turn()) || (game.p2->isABot() && !game.board->isP1Turn()))) {
         do {
-          validMove = game.move();
+          validMove = game.initiateMove();
         } while (!validMove);
       }
 
