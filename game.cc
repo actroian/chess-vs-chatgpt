@@ -124,7 +124,9 @@ void Game::updateState(bool setupMode) {
   // update that the piece has been moved
   if(!setupMode){
     unique_ptr<Move>& lastMove = board->prevMoves.top();
-    board->at(lastMove->end.first, lastMove->end.second)->moved();
+    if(board->at(lastMove->end.first, lastMove->end.second) != nullptr){
+      board->at(lastMove->end.first, lastMove->end.second)->setUnmoved(false);
+    }
   }
 }
 

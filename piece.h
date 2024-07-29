@@ -18,7 +18,6 @@ class Piece {
     virtual std::vector<std::unique_ptr<Move>> validMoves() const = 0;
     virtual char getSymbol() const = 0;
     bool isWhitePiece();
-    void moved();
     bool isUnmoved() const;
     void setUnmoved(bool);
     void setPosition(int, int);
