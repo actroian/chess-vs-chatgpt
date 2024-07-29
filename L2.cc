@@ -12,9 +12,7 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
     int randomMove;
 
     cout << "Number of Check Moves: " << checks.size() << endl;
-    // if(!checks.empty()) {
-    //     cout << "HERE HERE HERE HERE HERE HERE HERE HERE" << endl;
-    // }
+
     if(!checks.empty()) {
         randomMove = rand() % checks.size();
         return std::move(checks[randomMove]);

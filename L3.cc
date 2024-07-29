@@ -16,7 +16,6 @@ unique_ptr<Move> L3::chooseMove(unique_ptr<Board>& b, Player* p2) {
         return std::move(avoid[randomMove]);
     }
     return L2::chooseMove(b, p2);
-    return L2::chooseMove(b, p2);
     
 }
 
