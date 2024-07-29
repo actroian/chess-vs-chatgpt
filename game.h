@@ -37,7 +37,7 @@ class Game {
     void updateState(bool setupMode = false);
     void reset();
     void setup();
-    void endGame(int);
+    void endGame(int, bool = false);
     void beginGame(const std::string&, const std::string&);
     bool move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_ptr<Player>& opponent);
 };

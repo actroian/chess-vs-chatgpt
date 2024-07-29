@@ -30,11 +30,11 @@ int main() {
       if (game.isInGame()) {
         if (!game.board->isP1Turn()) {
           cout << endl << "Black resigns. ";
-          game.endGame(0);
+          game.endGame(0, true);
         }
         if (game.board->isP1Turn()) {
           cout << endl << "White resigns. ";
-          game.endGame(1);
+          game.endGame(1, true);
         }
         game.reset();
       }

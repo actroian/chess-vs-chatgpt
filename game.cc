@@ -13,17 +13,19 @@ void Game::reset() {
 }
 bool Game::isInGame() const { return inGame; }
 
-void Game::endGame(int state) {
+void Game::endGame(int state, bool resigned) {
   inGame = false;
 
   switch (state) {
     // doesn't break since we always want default to execute. assume valid state is passed
     case 0:
       ++wScore;
+      if (!resigned) out << "Checkmate! ";
       out << "White wins!" << endl;
       break;
     case 1:
       ++bScore;
+      if (!resigned) out << "Checkmate! ";
       out << "Black wins!" << endl;
       break;
     case 2:
