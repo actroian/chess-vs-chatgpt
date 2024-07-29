@@ -143,7 +143,7 @@ unique_ptr<Piece> Board::createPiece(string& pieceType, const pair<int,int>& loc
   if (pieceType == "n") {
     return make_unique<Knight>(location.first, location.second, nonConstThis, isWhite);
   }
-  return nullptr;
+  throw runtime_error("invalid piece");
 }
 
 bool Board::validateBoard() {

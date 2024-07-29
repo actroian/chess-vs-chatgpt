@@ -11,16 +11,9 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
     int select = rand() % 2;
     int randomMove;
 
-    cout << "Number of Check Moves: " << checks.size() << endl;
-
-    if(!checks.empty()) {
-        randomMove = rand() % checks.size();
-        return std::move(checks[randomMove]);
-    }
-
     /* Actual Implementation */
 
-    if(select && !captures.empty()) {
+    if (select && !captures.empty()) {
         randomMove = rand() % captures.size();
         return std::move(captures[randomMove]);
     }
@@ -28,7 +21,6 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
         randomMove = rand() % checks.size();
         return std::move(checks[randomMove]);
     }
-
     return L1::chooseMove(b, p2);
 }
 
