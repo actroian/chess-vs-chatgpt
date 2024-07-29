@@ -18,7 +18,7 @@ public:
     Move(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0');
     virtual ~Move() = 0;
 virtual std::unique_ptr<Move> clone() const = 0;
-    virtual bool move(std::unique_ptr<Board>& board, Player* p1, Player* p2) const = 0;
+    virtual bool move(std::unique_ptr<Board>& board, Player* p1, Player* p2, bool isPromotionMove = false) const = 0;
     virtual void undo(Board& board) = 0;
 
     virtual bool operator==(const Move& other) const;
@@ -32,7 +32,7 @@ public:
     bool captured_unmoved;
     NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0', bool first_piece_move = false, bool captured_unmoved = false);
 
-    bool move(std::unique_ptr<Board>& board,  Player* p1, Player* p2) const override;
+    bool move(std::unique_ptr<Board>& board,  Player* p1, Player* p2, bool isPromotionMove = false) const override;
     void undo(Board& board) override;
 std::unique_ptr<Move> clone() const override {
         return std::make_unique<NormalMove>(*this);
@@ -50,7 +50,7 @@ public:
 
     CastleMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& rookstart, const std::pair<int, int>& rookend);
 
-    bool move(std::unique_ptr<Board>& board,  Player* p1, Player* p2) const override;
+    bool move(std::unique_ptr<Board>& board,  Player* p1, Player* p2, bool isPromotionMove = false) const override;
     void undo(Board& board) override;
     std::unique_ptr<Move> clone() const override {
         return std::make_unique<CastleMove>(*this);
@@ -69,7 +69,7 @@ public:
     bool captured_unmoved;
     EnpassantMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& captured_position, char captured_piece = '\0');
 
-    bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent) const override;
+    bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent, bool isPromotionMove = false) const override;
     void undo(Board& board) override;
     std::unique_ptr<Move> clone() const override {
         return std::make_unique<EnpassantMove>(*this);
@@ -86,7 +86,7 @@ public:
 
     PromotionMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char promotion_piece, char captured_piece = '\0');
 
-    bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent) const override;
+    bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent, bool isPromotionMove = false) const override;
     void undo(Board& board) override;
     std::unique_ptr<Move> clone() const override {
         return std::make_unique<PromotionMove>(*this);

@@ -18,7 +18,7 @@ bool Move::operator!=(const Move& other) const {
 NormalMove::NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece, bool first_piece_move, bool captured_unmoved)
     : Move(start, end, captured_piece), first_piece_move{first_piece_move}, captured_unmoved{captured_unmoved} {}
 
-bool NormalMove::move(unique_ptr<Board>& board, Player* p1, Player* p2) const {
+bool NormalMove::move(unique_ptr<Board>& board, Player* p1, Player* p2, bool isPromotionMove) const {
     board->placePiece(end.first, end.second, std::move(board->at(start.first, start.second)));
     board->removePiece(start.first, start.second);
     if(p1->kingInCheck(board, p1, p2)){
@@ -50,7 +50,7 @@ bool NormalMove::operator!=(const Move& other) const {
 CastleMove::CastleMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& rookstart, const std::pair<int, int>& rookend)
     : Move(start, end), rookstart(rookstart), rookend(rookend) {}
 
-bool CastleMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent) const {
+bool CastleMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent, bool isPromotionMove) const {
     if (start.second <= end.second) {
         for (int i = start.second; i < end.second - 1; ++i) {
             board->placePiece(start.first, i + 1, std::move(board->at(start.first, i)));
@@ -105,7 +105,7 @@ bool CastleMove::operator!=(const Move& other) const {
 EnpassantMove::EnpassantMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& captured_position, char captured_piece)
     : Move(start, end, captured_piece), captured_position(captured_position) {}
 
-bool EnpassantMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent) const {
+bool EnpassantMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent, bool isPromotionMove) const {
     board->placePiece(end.first, end.second, std::move(board->at(start.first, start.second)));
     board->removePiece(start.first, start.second);
     board->removePiece(captured_position.first, captured_position.second);
@@ -142,18 +142,28 @@ bool EnpassantMove::operator!=(const Move& other) const {
 PromotionMove::PromotionMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const char promotion_piece, char captured_piece)
     : Move{start, end, captured_piece}, promotion_piece{promotion_piece} {}
 
-bool PromotionMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent) const {
-    string promotion = getInput("pawn promotion", validPromotions);
+bool PromotionMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent, bool isPromotionMove) const {
+    string promotion;
+    if(isPromotionMove && !movingplayer->isABot()) {
+        promotion = getInput("pawn promotion", validPromotions);
+    }
+    else{
+        promotion = "Q";
+    }
     promotion = movingplayer->isP1() ? toupper(promotion[0]) : tolower(promotion[0]);
     board->placePiece(end.first, end.second, board->createPiece(promotion, end));
     board->removePiece(start.first, start.second);
-    cout << "Pawn promoted to " << promotion << endl;
+    if(isPromotionMove)cout << "Pawn promoted to " << promotion << endl;
     return true;
 }
 
 void PromotionMove::undo(Board& board) {
     board.removePiece(end.first, end.second);
     board.placePiece(start.first, start.second, make_unique<Pawn>(start.first, start.second, board, promotion_piece != tolower(promotion_piece)));
+    if(captured_piece != '\0'){
+        string piece = string{captured_piece};
+        board.placePiece(end.first, end.second, board.createPiece(piece, end));
+    }
 }
 
 bool PromotionMove::operator==(const Move& other) const {

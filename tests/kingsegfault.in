@@ -1,0 +1,41 @@
+setup
+= WHITE
++ R a1
++ N b1 
++ B c1 
++ K e1
++ B f1 
++ N g1 
++ R h1 
++ P a2 
++ P b2 
++ P c3 
++ P d2 
++ P e2
++ P f2
++ P g3 
++ P h2 
++ Q f6 
+= BLACK 
++ p a5
++ r a7
++ n b8
++ b c8 
++ q d8 
++ k e8 
++ r h8 
++ p b7 
++ p c7
++ p d7 
++ p e7 
++ p f5 
++ p g7
++ p h6
+done 
+game 
+human
+human
+move
+f6 f8
+move 
+e8 f8

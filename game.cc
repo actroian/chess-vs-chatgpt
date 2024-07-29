@@ -124,7 +124,7 @@ void Game::updateState(bool setupMode) {
   // update that the piece has been moved
   if(!setupMode){
     unique_ptr<Move>& lastMove = board->prevMoves.top();
-    board->at(lastMove->end.first, lastMove->end.second)->moved();
+      board->at(lastMove->end.first, lastMove->end.second)->setUnmoved(false);
   }
 }
 
@@ -152,24 +152,23 @@ bool Game::initiateMove(){
   bool piecemoved;
   if(board->isP1Turn()){
     piecemoved = move(board, p1, p2);
-      if (!piecemoved) {
-    return false;
-  }
+    if (!piecemoved) {
+      return false;
+    }
     if(p1->kingInCheck(board, p1.get(), p2.get())){
       p1->setInCheck(true);
       board->undo();
       return false;
     }
     p1->setInCheck(false);
-
   }
   else{
     piecemoved = move(board, p2, p1);
-      if (!piecemoved) {
-    return false;
-  }
+    if (!piecemoved) {
+      return false;
+    }
     if(p2->kingInCheck(board, p2.get(), p1.get())){
-      p1->setInCheck(true);
+      p2->setInCheck(true);
       board->undo();
       return false;
     }
@@ -188,21 +187,29 @@ bool Game::initiateMove(){
 bool Game::move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_ptr<Player>& opponent) {
     vector<unique_ptr<Move>> allmoves = moving_player->possibleMoves(b, opponent.get());
     unique_ptr<Move> move = moving_player->chooseMove(b, opponent.get());
-    bool movefound = false;
 
     for(auto& validmove : allmoves){
-      if(validmove->start == move->start && validmove->end == move->end){
-        move = std::move(validmove);
-        movefound = true;
-      }
-    }
-    if (movefound) {
-      if(move->move(b, moving_player.get(), opponent.get())){
-        b->prevMoves.push(std::move(move));
-        return true;
-      }
-      else{
-        move->undo(*b);
+      if (move != nullptr && validmove->start == move->start && validmove->end == move->end){
+        // special cases
+        Move* temp = validmove.get();
+        if (dynamic_cast<CastleMove*>(temp)) {
+          move = make_unique<CastleMove>(static_cast<CastleMove&>(*temp));
+        }
+        else if (dynamic_cast<EnpassantMove*>(validmove.get())) {
+          move = make_unique<EnpassantMove>(static_cast<EnpassantMove&>(*temp));
+        }
+        else if (dynamic_cast<PromotionMove*>(validmove.get())) {
+          move = make_unique<PromotionMove>(static_cast<PromotionMove&>(*temp));
+        }
+
+        if (move->move(b, moving_player.get(), opponent.get(), true)) {
+            b->prevMoves.push(std::move(move));
+            return true;
+        } 
+        else {
+          move->undo(*b);
+        }
+        break;
       }
     }
     return false;
