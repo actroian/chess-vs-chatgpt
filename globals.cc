@@ -53,7 +53,9 @@ string getInput(const string& item, vector<string>& validInputs) {
     for (int i = 0; i < min(4, static_cast<int>(validInputs.size())); ++i) cout << (i != 0 ? ", " : "") << validInputs[i];
     cout << "):" << endl;
 
-    if (!(cin >> input)) exit(0);
+    if (!(cin >> input)) {
+      return "q";
+    }
 
     // in-place conversion of input to lowercase
     if(validInputs != validPieces) transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
