@@ -196,14 +196,13 @@ bool Game::move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_
         movefound = true;
       }
     }
-    if (movefound) {
-      if(move->move(b, moving_player.get(), opponent.get())){
-        b->prevMoves.push(std::move(move));
-        return true;
+  if (movefound) {
+      if (move->move(b, moving_player.get(), opponent.get(), true)) {
+          b->prevMoves.push(std::move(move));
+          return true;
+      } else {
+          move->undo(*b);
       }
-      else{
-        move->undo(*b);
-      }
-    }
+  }
     return false;
 }

@@ -53,28 +53,28 @@ vector<unique_ptr<Move>> Pawn::validMoves() const {
         bool first_piece_unmoved = b.at(row, col)->isUnmoved();
 
     if (isWhite) {
-        if (row-1 >= 0 && b.at(row-1, col) == nullptr) {
-            if (row-1 == 0) {
-                emplacePromotionMove(moves, {row, col}, {row-1, col}, 'Q'); // Assume promotion to Queen
+        if (row - 1 >= 0 && b.at(row - 1, col) == nullptr) {
+            if (row - 1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row - 1, col}, 'Q'); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col}, first_piece_unmoved);
+                emplaceNormalMove(moves, {row, col}, {row - 1, col}, first_piece_unmoved);
             }
         }
-        if (unmoved && row-2 >= 0 && b.at(row-1, col) == nullptr && b.at(row-2, col) == nullptr) {
-            emplaceNormalMove(moves, {row, col}, {row-2, col}, first_piece_unmoved);
+        if (unmoved && row - 2 >= 0 && b.at(row - 1, col) == nullptr && b.at(row - 2, col) == nullptr) {
+            emplaceNormalMove(moves, {row, col}, {row - 2, col}, first_piece_unmoved);
         }
-        if (row-1 >= 0 && col-1 >= 0 && b.at(row-1, col-1) != nullptr && !b.at(row-1, col-1)->isWhitePiece()) {
-            if (row-1 == 0) {
-                emplacePromotionMove(moves, {row, col}, {row-1, col-1}, 'Q', b.at(row-1, col-1)->getSymbol()); // Assume promotion to Queen
+        if (row - 1 >= 0 && col - 1 >= 0 && b.at(row - 1, col - 1) != nullptr && !b.at(row - 1, col - 1)->isWhitePiece()) {
+            if (row - 1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row - 1, col - 1}, 'Q', b.at(row - 1, col - 1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col-1}, first_piece_unmoved, b.at(row-1, col-1).get() );
+                emplaceNormalMove(moves, {row, col}, {row - 1, col - 1}, first_piece_unmoved, b.at(row - 1, col - 1).get());
             }
         }
-        if (row-1 >= 0 && col+1 <= 7 && b.at(row-1, col+1) != nullptr && !b.at(row-1, col+1)->isWhitePiece()) {
-            if (row-1 == 0) {
-                emplacePromotionMove(moves, {row, col}, {row-1, col+1}, 'Q', b.at(row-1, col+1)->getSymbol()); // Assume promotion to Queen
+        if (row - 1 >= 0 && col + 1 <= 7 && b.at(row - 1, col + 1) != nullptr && !b.at(row - 1, col + 1)->isWhitePiece()) {
+            if (row - 1 == 0) {
+                emplacePromotionMove(moves, {row, col}, {row - 1, col + 1}, 'Q', b.at(row - 1, col + 1)->getSymbol()); // Assume promotion to Queen
             } else {
-                emplaceNormalMove(moves, {row, col}, {row-1, col+1}, first_piece_unmoved, b.at(row-1, col+1).get());
+                emplaceNormalMove(moves, {row, col}, {row - 1, col + 1}, first_piece_unmoved, b.at(row - 1, col + 1).get());
             }
         }
 

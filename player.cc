@@ -69,7 +69,7 @@ vector<unique_ptr<Move>> Player::possibleMoves(unique_ptr<Board>& board, Player*
                 for (auto& validmove : validMoves) {
                     // Clone the move to avoid invalid state after move
                     bool undone = false;
-                    if (validmove->move(board, this, p2)) {
+                    if (validmove->move(board, this, p2, false)) {
                         if (!kingInCheck(board, this, p2)) {
                             validmove->undo(*board);
                             undone = true;
