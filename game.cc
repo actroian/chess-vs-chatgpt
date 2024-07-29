@@ -185,8 +185,6 @@ bool Game::initiateMove(){
 bool Game::move(unique_ptr<Board>& b, unique_ptr<Player>& moving_player, unique_ptr<Player>& opponent) {
     vector<unique_ptr<Move>> allmoves = moving_player->possibleMoves(b, opponent.get());
     unique_ptr<Move> move = moving_player->chooseMove(b, opponent.get());
-    auto start = move->start;
-    auto end = move->end;
     bool movefound = false;
 
     for(auto& validmove : allmoves){

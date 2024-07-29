@@ -20,6 +20,7 @@ class Piece {
     bool isWhitePiece();
     void moved();
     bool isUnmoved() const;
+    void setUnmoved(bool);
     void setPosition(int, int);
     virtual ~Piece() {}
 };
