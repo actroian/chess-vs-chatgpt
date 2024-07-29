@@ -6,19 +6,30 @@ L2::L2(bool isWhite) : L1(isWhite) {}
 
 unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> checks = checkMoves(b, p2);
+    vector<unique_ptr<Move>> captures = captureMoves(b, p2);
 
     int select = rand() % 2;
     int randomMove;
 
     cout << "Number of Check Moves: " << checks.size() << endl;
+    // if(!checks.empty()) {
+    //     cout << "HERE HERE HERE HERE HERE HERE HERE HERE" << endl;
+    // }
     if(!checks.empty()) {
-        cout << "HERE HERE HERE HERE HERE HERE HERE HERE" << endl;
-    }
-
-    if (!checks.empty()) {
         randomMove = rand() % checks.size();
         return std::move(checks[randomMove]);
     }
+
+    /* Actual Implementation */
+
+    // if(select && !captures.empty()) {
+    //     randomMove = rand() % captures.size();
+    //     return std::move(captures[randomMove]);
+    // }
+    // else if (!checks.empty()) {
+    //     randomMove = rand() % checks.size();
+    //     return std::move(checks[randomMove]);
+    // }
 
     return L1::chooseMove(b, p2);
 }
@@ -54,7 +65,6 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
                 auto loc = afterMove->end;
                 if (b->at(loc.first, loc.second) != nullptr && tolower(b->at(loc.first, loc.second)->getSymbol()) == 'k') {
                     checks.push_back(std::move(move));
-                    cout << "KING" << endl;
                     break;
                 }
             }         
