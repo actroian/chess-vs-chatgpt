@@ -8,5 +8,4 @@ unique_ptr<Move> L1::chooseMove(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> allMoves = possibleMoves(b, p2);
     int randomMove = rand() % allMoves.size();
     return std::move(allMoves[randomMove]);
-    return nullptr;
 }
