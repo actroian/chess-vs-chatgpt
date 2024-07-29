@@ -109,8 +109,6 @@ unique_ptr<Move> L4::chooseMove(unique_ptr<Board>& b, Player* p2) {
         }
     }
 
-    attempts = 0;
-
     unique_ptr<Move> move = std::make_unique<NormalMove>(posToInd[start], posToInd[end]);
     vector<unique_ptr<Move>> validMoves = possibleMoves(b, p2);
     if (std::find(validMoves.begin(), validMoves.end(), move) == validMoves.end()) {
@@ -122,6 +120,8 @@ unique_ptr<Move> L4::chooseMove(unique_ptr<Board>& b, Player* p2) {
         return chooseMove(b, p2);
     }
 
+    attempts = 0;
+    
     return move;
 }
 
