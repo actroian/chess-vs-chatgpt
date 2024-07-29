@@ -27,7 +27,10 @@ virtual std::unique_ptr<Move> clone() const = 0;
 
 class NormalMove : public Move {
 public:
-    NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0');
+
+    bool first_piece_move;
+    bool captured_unmoved;
+    NormalMove(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece = '\0', bool first_piece_move = false, bool captured_unmoved = false);
 
     bool move(std::unique_ptr<Board>& board,  Player* p1, Player* p2) const override;
     void undo(Board& board) override;
@@ -62,6 +65,8 @@ class EnpassantMove : public Move {
 public:
     std::pair<int, int> captured_position;
 
+    bool first_piece_move;
+    bool captured_unmoved;
     EnpassantMove(const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& captured_position, char captured_piece = '\0');
 
     bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent) const override;
