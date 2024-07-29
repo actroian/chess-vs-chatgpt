@@ -56,18 +56,19 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
 
     for (auto& move : allMoves) {
         if(move != nullptr){
-        move->move(b, this, p2);
+            move->move(b, this, p2);
 
-        bool isMoved = false;
-        
-        if (this->kingInCheck(b, this, p2)) {
-            move->undo(*b);
-            isMoved = true;
-            checks.push_back(std::move(move));
+            bool isMoved = false;
+            
+            if (this->kingInCheck(b, this, p2)) {
+                move->undo(*b);
+                isMoved = true;
+                checks.push_back(std::move(move));
+            }
+            if(!isMoved){
+                move->undo(*b);
+            }
         }
-        if(!isMoved){
-            move->undo(*b);
-        }}
     }
     return checks;
 }
