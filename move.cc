@@ -144,7 +144,7 @@ PromotionMove::PromotionMove(const std::pair<int, int>& start, const std::pair<i
 
 bool PromotionMove::move(unique_ptr<Board>& board, Player* movingplayer, Player* opponent, bool isPromotionMove) const {
     string promotion;
-    if(isPromotionMove) {
+    if(isPromotionMove && !movingplayer->isABot()) {
         promotion = getInput("pawn promotion", validPromotions);
     }
     else{
