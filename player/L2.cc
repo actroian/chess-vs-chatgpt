@@ -47,9 +47,6 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
     for (auto& move : allMoves) {
         if(move != nullptr){
             move->move(b, this, p2);
-
-            bool isMoved = false;
-            
             // Check if this move results in a check against the opponent's king
             if (p2->kingInCheck(b, p2, this)) {
                 // If it does, undo the move and add it to the checks list

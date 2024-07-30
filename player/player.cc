@@ -1,9 +1,8 @@
 #include "player.h"
 #include <algorithm>
 #include <iostream>
-
+#include "human.h"
 using namespace std;
-
 Player::Player(bool isWhite, bool isBot): isWhite{isWhite}, inCheck{false}, isBot{isBot} {}
 Player::~Player() {}
 bool Player::isInCheck() const { return inCheck; }
@@ -68,7 +67,6 @@ vector<unique_ptr<Move>> Player::possibleMoves(unique_ptr<Board>& board, Player*
                 vector<unique_ptr<Move>> validMoves = board->at(row, col)->validMoves();
                 for (auto& validmove : validMoves) {
                     if(validmove != nullptr){
-                        // Clone the move to avoid invalid state after move
                         bool undone = false;
                         if (validmove->move(board, this, p2, false)) {
                             if (!kingInCheck(board, this, p2)) {
@@ -78,7 +76,7 @@ vector<unique_ptr<Move>> Player::possibleMoves(unique_ptr<Board>& board, Player*
                             } 
                         }
                         if(!undone){
-                        validmove->undo(*board);
+                            validmove->undo(*board);
                         }
                     }
                 }
@@ -100,16 +98,4 @@ vector<pair<int, int>> Player::getMyPiecePositions(std::unique_ptr<Board>& b, bo
     }
   }
   return myPos;
-}
-
-Human::Human(bool isWhite): Player{isWhite, false} {}
-
-unique_ptr<Move> Human::chooseMove(unique_ptr<Board>& b, Player* p2) {
-    string startLoc = getInput("location of piece you want to move", boardLocations);
-    string endLoc = getInput("location you want to move the piece to", boardLocations);
-  
-    auto start = posToInd[startLoc];
-    auto end = posToInd[endLoc];
-
-    return std::make_unique<NormalMove>(start, end);
 }
