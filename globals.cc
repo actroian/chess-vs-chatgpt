@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "globals.h"
 #include "player.h"
 #include "move.h"
@@ -31,7 +32,7 @@ map<pair<int,int>, string> indToPos;
 const NormalMove NO_LAST_MOVE{{-1,-1},{-1,-1}};
 
 void initializePosToInd() {
-    for (int i = 0; i < boardLocations.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(boardLocations.size()); ++i) {
         const string& pos = boardLocations[i];
         int row = 8 - (pos[1] - '0');  // Convert '1'-'8' to 7-0
         int col = pos[0] - 'a';        // Convert 'a'-'h' to 0-7
