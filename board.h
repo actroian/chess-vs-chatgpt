@@ -5,8 +5,8 @@
 #include <memory>
 #include <stack>
 
-#include "globals.h"
 #include "move.h"
+#include "globals.h"
 #include "piece.h"
 #include "window.h"
 

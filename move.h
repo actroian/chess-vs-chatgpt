@@ -4,15 +4,9 @@
 #include <vector>
 #include <utility>
 #include <memory>
-//#include "normalmove.h"
-//#include "enpassantmove.h"
-//#include "castlemove.h"
-//#include "promotionmove.h"
 #include "piece.h"
 #include "player.h"
-
-class Player;
-class Board;
+#include "board.h"
 
 class Move {
 public:

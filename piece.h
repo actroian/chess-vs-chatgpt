@@ -4,8 +4,8 @@
 #include <vector>
 #include <utility>
 #include "move.h"
+
 class Board;
-class Move;
 
 class Piece {
   protected:

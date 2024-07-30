@@ -1,5 +1,4 @@
 #include "move.h"
-#include "board.h"
 using namespace std;
 
 Move::Move(const std::pair<int, int>& start, const std::pair<int, int>& end, char captured_piece)
