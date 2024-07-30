@@ -9,14 +9,11 @@ unique_ptr<Move> L3::chooseMove(unique_ptr<Board>& b, Player* p2) {
     vector<unique_ptr<Move>> avoid = avoidCaptureMoves(b, p2);
     int randomMove;
 
-    cout << "Number of Avoid: " << avoid.size() << endl;
-
     if (!avoid.empty()) {
         randomMove = rand() % avoid.size();
         return std::move(avoid[randomMove]);
     }
     return L2::chooseMove(b, p2);
-    
 }
 
 vector<unique_ptr<Move>> L3::avoidCaptureMoves(unique_ptr<Board>& b, Player* p2) {
@@ -32,51 +29,47 @@ vector<unique_ptr<Move>> L3::avoidCaptureMoves(unique_ptr<Board>& b, Player* p2)
     for (const auto& move : otherPlayersMoves) {
         for (const auto& pos : myPos) {
             if(move != nullptr){
-            if (move->end.first == pos.first && move->end.second == pos.second) {
-                // Check if the position is already in capturePositions
-                bool found = false;
-                for (const auto& capturePos : capturePositions) {
-                    if (capturePos == make_pair(pos.first, pos.second)) {
-                        found = true;
-                        break;
+                if (move->end.first == pos.first && move->end.second == pos.second) {
+                    // Check if the position is already in capturePositions
+                    bool found = false;
+                    for (const auto& capturePos : capturePositions) {
+                        if (capturePos == make_pair(pos.first, pos.second)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        capturePositions.push_back(make_pair(pos.first, pos.second));
                     }
                 }
-                if (!found) {
-                    capturePositions.push_back(make_pair(pos.first, pos.second));
-                }
-            }
             }
         }
     }
 
     vector<unique_ptr<Move>> myMoves = possibleMoves(b, p2, false);
-
-    cout << "How many positions are capturable: " << capturePositions.size() << endl;
-
     vector<unique_ptr<Move>> possibleAvoidMoves;
     for (auto& move : myMoves) {
         if(move != nullptr){
-        for (const auto& capturePos : capturePositions) {
-            if (move->start.first == capturePos.first && move->start.second == capturePos.second) {
-                possibleAvoidMoves.push_back(std::move(move));
+            for (const auto& capturePos : capturePositions) {
+                if (move->start.first == capturePos.first && move->start.second == capturePos.second) {
+                    possibleAvoidMoves.push_back(std::move(move));
+                    break;
+                }
+            }
+        }
+    }
+    for (auto& posMove: possibleAvoidMoves) {
+        bool isSafe = true;
+        for (const auto& oppMove : otherPlayersMoves) {
+            if(oppMove && posMove->end == oppMove->end) {
+                isSafe = false;
                 break;
             }
-        }}
+        }
+        if (isSafe) {
+            avoid.push_back(std::move(posMove));
+        }
     }
 
-    return possibleAvoidMoves;
-
-    //TODO: Check if the ending of my move is also not being attack
-
-    // for (auto& posMove: possibleAvoidMoves) {
-    //     for (const auto& oppMove : otherPlayersMoves) {
-    //         if(oppMove->end.first == posMove->end.first && oppMove->end.second == posMove->end.second) {
-    //             // not a valid move
-    //             break;
-    //         }
-    //         avoid.push_back(std::move(posMove));
-    //     }
-    // }
-
-    // return avoid;
+    return avoid;
 }

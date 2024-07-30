@@ -1,0 +1,15 @@
+setup
+= BLACK 
++ k b7 
++ p d6
+= WHITE 
++ Q c5 
++ B e5 
++ K h8
+done 
+game
+human 
+computer4 
+move 
+h8 h7
+move 
