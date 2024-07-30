@@ -7,6 +7,10 @@
 #include <memory>
 #include <map>
 #include "player.h"
+#include "normalmove.h"
+#include "enpassantmove.h"
+#include "castlemove.h"
+#include "promotionmove.h"
 #include "L1.h"
 #include "L2.h"
 #include "L3.h"
