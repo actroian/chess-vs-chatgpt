@@ -31,10 +31,4 @@ class Player {
     virtual ~Player() = 0;
 };
 
-class Human: public Player {
-  public:
-    Human(bool);
-    std::unique_ptr<Move> chooseMove(std::unique_ptr<Board>& b, Player* p2) override;
-};
-
 #endif
