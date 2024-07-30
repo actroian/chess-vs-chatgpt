@@ -11,8 +11,6 @@ unique_ptr<Move> L2::chooseMove(unique_ptr<Board>& b, Player* p2) {
     int select = rand() % 2;
     int randomMove;
 
-    /* Actual Implementation */
-
     if (select && !captures.empty()) {
         randomMove = rand() % captures.size();
         return std::move(captures[randomMove]);
@@ -52,12 +50,13 @@ vector<unique_ptr<Move>> L2::checkMoves(unique_ptr<Board>& b, Player* p2) {
 
             bool isMoved = false;
             
-            if (this->kingInCheck(b, this, p2)) {
+            // Check if this move results in a check against the opponent's king
+            if (p2->kingInCheck(b, p2, this)) {
+                // If it does, undo the move and add it to the checks list
                 move->undo(*b);
-                isMoved = true;
                 checks.push_back(std::move(move));
-            }
-            if(!isMoved){
+            } else {
+                // Otherwise, just undo the move
                 move->undo(*b);
             }
         }
