@@ -20,4 +20,5 @@ extern std::vector<std::string> validMainCommands;
 
 void initializePosToInd();
 std::string getInput(const std::string&, std::vector<std::string>&);
+
 #endif
