@@ -1,4 +1,5 @@
 #include "human.h"
+
 using namespace std;
 
 Human::Human(bool isWhite): Player{isWhite, false} {}

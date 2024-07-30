@@ -7,6 +7,7 @@
 #include <memory>
 #include <map>
 #include "player.h"
+#include "human.h"
 #include "normalmove.h"
 #include "enpassantmove.h"
 #include "castlemove.h"

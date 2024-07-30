@@ -37,6 +37,3 @@ bool PromotionMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-std::unique_ptr<Move> PromotionMove::clone() const {
-  return std::make_unique<PromotionMove>(*this);
-}

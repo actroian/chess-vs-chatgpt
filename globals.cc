@@ -1,6 +1,12 @@
 #include <iostream>
 #include "globals.h"
 #include "player.h"
+#include "move.h"
+#include "enpassantmove.h"
+#include "promotionmove.h"
+#include "castlemove.h"
+#include "normalmove.h"
+
 using namespace std;
 
 vector<string> validMainCommands = {"game","move","setup","resign", "q"};
@@ -67,4 +73,25 @@ string getInput(const string& item, vector<string>& validInputs) {
     }
     cout << "Invalid input. Try again." << endl;
   }
+}
+
+// Helper function to create and emplace a NormalMove
+void emplaceNormalMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, bool first_piece_move, Piece* capturedPiece) {
+    bool captured_unmoved = false;
+    char capturedPieceChar = '\0';
+    if(capturedPiece != nullptr){
+        captured_unmoved = capturedPiece->isUnmoved();
+        capturedPieceChar = capturedPiece->getSymbol();
+    }
+    moves.emplace_back(std::make_unique<NormalMove>(start, end, capturedPieceChar, first_piece_move, captured_unmoved));
+}
+
+// Helper function to create and emplace an EnpassantMove
+void emplaceEnpassantMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, const std::pair<int, int>& capturedPosition, char capturedPiece) {
+    moves.emplace_back(std::make_unique<EnpassantMove>(start, end, capturedPosition, capturedPiece));
+}
+
+// Helper function to create and emplace a PromotionMove
+void emplacePromotionMove(std::vector<std::unique_ptr<Move>>& moves, const std::pair<int, int>& start, const std::pair<int, int>& end, char promotedTo, char capturedPiece) {
+    moves.emplace_back(std::make_unique<PromotionMove>(start, end, promotedTo, capturedPiece));
 }

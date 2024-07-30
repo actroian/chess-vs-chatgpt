@@ -56,6 +56,3 @@ bool CastleMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-std::unique_ptr<Move> CastleMove::clone() const {
-  return std::make_unique<CastleMove>(*this);
-}

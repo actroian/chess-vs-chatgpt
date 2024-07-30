@@ -2,7 +2,8 @@
 #define ENPASSANTMOVE_H
 
 #include "move.h"
-
+#include "board.h"
+#include "player.h"
 class EnpassantMove : public Move {
   public:
     std::pair<int, int> captured_position;
@@ -13,7 +14,6 @@ class EnpassantMove : public Move {
 
     bool move(std::unique_ptr<Board>& board,  Player* movingplayer, Player* opponent, bool isPromotionMove = false) const override;
     void undo(Board& board) override;
-    std::unique_ptr<Move> clone() const override;
     bool operator==(const Move& other) const override;
     bool operator!=(const Move& other) const override;
 

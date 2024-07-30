@@ -4,22 +4,26 @@
 #include <iostream>
 #include <memory>
 #include <stack>
-
-#include "move.h"
+#include <vector>
 #include "globals.h"
-#include "piece.h"
 #include "window.h"
+#include "piece.h"
+#include "pawn.h"
+#include "king.h"
+#include "queen.h"
+#include "knight.h"
+#include "bishop.h"
+#include "rook.h"
+class Piece;  // Forward declaration
+class Move;  // Forward declaration
 
-class Player;
-class Piece;
-
-class Board{
+class Board {
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     bool p1Turn, custom;
     bool validateBoard();
     Xwindow window;
 
-  public:
+public:
     std::stack<std::unique_ptr<Move>> prevMoves;
 
     Board();
@@ -38,4 +42,4 @@ class Board{
     void clearBoard();
 };
 
-#endif
+#endif // BOARD_H

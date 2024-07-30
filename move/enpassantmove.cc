@@ -38,6 +38,3 @@ bool EnpassantMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-unique_ptr<Move> EnpassantMove::clone() const {
-  return std::make_unique<EnpassantMove>(*this);
-}

@@ -33,6 +33,3 @@ bool NormalMove::operator!=(const Move& other) const {
     return !(*this == other);
 }
 
-unique_ptr<Move> NormalMove::clone() const {
-  return std::make_unique<NormalMove>(*this);
-}

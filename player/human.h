@@ -2,7 +2,8 @@
 #define HUMAN_H
 
 #include "player.h"
-
+#include "globals.h"
+#include "move.h"
 class Human: public Player {
   public:
     Human(bool);

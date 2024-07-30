@@ -15,3 +15,5 @@ nlohmann-json/
 graphicsdemo/
 L4a.cc
 L4a.h
+allprojectdocuments/curl
+allprojectdocuments/nlohmann-json

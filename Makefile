@@ -1,26 +1,26 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -I./nlohmann-json/include -I/opt/homebrew/include -I/opt/X11/include -I./include -Wall -g
+CXXFLAGS = -std=c++14 -I/opt/X11/include -I./include -I./piece -I./player -I./move -I. -Wall -g
 
 EXEC = chess
 
-CCFILES = $(wildcard *.cc)
+CCFILES = $(wildcard *.cc piece/*.cc player/*.cc move/*.cc)
+
 OBJDIR = obj
 LDFLAGS = -L/opt/homebrew/lib
 LDLIBS = -lcurl -lX11
 
-# Object files (in the obj directory)
 OBJECTS = $(patsubst %.cc, $(OBJDIR)/%.o, $(CCFILES))
+
+SUBDIRS = $(OBJDIR) $(OBJDIR)/piece $(OBJDIR)/player $(OBJDIR)/move
 
 $(EXEC): $(OBJECTS)
 	$(CXX) $(OBJECTS) $(LDFLAGS) -o $(EXEC) $(LDLIBS)
 
-# Rule to compile source files into object files
-$(OBJDIR)/%.o: %.cc | $(OBJDIR)
+$(OBJDIR)/%.o: %.cc | $(SUBDIRS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Ensure the object directory exists
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+$(SUBDIRS):
+	mkdir -p $(SUBDIRS)
 
 .PHONY: clean
 clean:
