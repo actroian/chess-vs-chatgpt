@@ -82,7 +82,7 @@ void Board::print(std::ostream& out) {
   xwindowOutput = terminalOutput.substr(2);
 
   out << endl << terminalOutput << endl << endl;
-  for (int i = 0; i < xwindowOutput.length(); i++) {
+  for (int i = 0; i < static_cast<int>(xwindowOutput.length()); i++) {
     string letter = string(1,xwindowOutput[i]);
     window.drawString(20*i + 20, 20*9, letter);
   }
